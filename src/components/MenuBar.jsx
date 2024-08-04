@@ -22,6 +22,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import { NavLink, useLocation } from "react-router-dom";
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
 
 const drawerWidth = 240;
 
@@ -37,9 +38,9 @@ const menuItem=[
     icon:<DashboardIcon/>
   },
   {
-    path:"/about",
-    name:"About",
-    icon:<AccountCircleIcon/>
+    path:"/permisos",
+    name:"Permisos",
+    icon:<BorderColorIcon/>
   }
 ]
 

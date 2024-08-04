@@ -6,6 +6,7 @@ import './App.css'
 import Home from './pages/Home'
 import { Routes, Route} from "react-router-dom";
 import Dashboard from './pages/Dashboard'
+import Permisos from './pages/Permisos'
 
 function App() {
   	const [count, setCount] = useState(0)
@@ -18,6 +19,9 @@ function App() {
 				</Route>
 				<Route>
 					<Route path="/dashboard" element={<Dashboard/>} />
+				</Route>
+				<Route>
+					<Route path="/permisos" element={<Permisos/>} />
 				</Route>
 			</Routes>
 		</MenuBar>
