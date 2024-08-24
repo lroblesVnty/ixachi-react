@@ -23,6 +23,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
+import { Dangerous } from "@mui/icons-material";
 
 const drawerWidth = 240;
 
@@ -41,6 +42,11 @@ const menuItem=[
     path:"/permisos",
     name:"Permisos",
     icon:<BorderColorIcon/>
+  },
+  {
+    path:"/levantamiento",
+    name:"Levantamientos",
+    icon:<Dangerous/>
   }
 ]
 
@@ -222,7 +228,7 @@ function MenuBar({children}) {
             ))}
             </List>
         </Drawer>
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <Box component="main" sx={{ flexGrow: 1, p: 3 }} >
             <DrawerHeader />
             {children}
         </Box>

@@ -7,6 +7,7 @@ import Home from './pages/Home'
 import { Routes, Route} from "react-router-dom";
 import Dashboard from './pages/Dashboard'
 import Permisos from './pages/Permisos'
+import Levantamientos from './pages/Levantamientos'
 
 function App() {
   	const [count, setCount] = useState(0)
@@ -22,6 +23,9 @@ function App() {
 				</Route>
 				<Route>
 					<Route path="/permisos" element={<Permisos/>} />
+				</Route>
+				<Route>
+					<Route path="/levantamiento" element={<Levantamientos/>} />
 				</Route>
 			</Routes>
 		</MenuBar>
