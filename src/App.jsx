@@ -10,35 +10,30 @@ import Permisos from './pages/Permisos'
 import Levantamientos from './pages/Levantamientos'
 
 function App() {
-  	const [count, setCount] = useState(0)
 
   	return (
-		<MenuBar>
+		<MenuBar> 
 			<Routes>
-				<Route>
-					<Route path="/home" element={<Home/>} />
-				</Route>
-				<Route>
-					<Route path="/dashboard" element={<Dashboard/>} />
-				</Route>
-				<Route>
-					<Route path="/permisos" element={<Permisos/>} />
-				</Route>
-				<Route>
-					<Route path="/levantamiento" element={<Levantamientos/>} />
-				</Route>
+				 <Route path="/home" element={<Home/>} />
+				 <Route path="/dashboard" element={<Dashboard/>} />
+				 <Route path="/permisos" element={<Permisos/>} />
+				 <Route path="/levantamiento" element={<Levantamientos/>} />
+					{/* <Route>
+						<Route path="/home" element={<Home/>} />
+					</Route>
+					<Route>
+						<Route path="/dashboard" element={<Dashboard/>} />
+					</Route>
+					<Route>
+						<Route path="/permisos" element={<Permisos/>} />
+					</Route>
+					<Route>
+						<Route path="/levantamiento" element={<Levantamientos/>} />
+					</Route> */}
 			</Routes>
 		</MenuBar>
-   		/*  <>
-		<div>
-			<MenuBar>
-			<Home />
-				
-			</MenuBar>
-		</div>
-      
-   		 </> */
-  )
+   		
+  );
 }
 
 export default App
