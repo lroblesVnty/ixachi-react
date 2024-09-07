@@ -11,7 +11,12 @@ export const  addMember=async (data)=>{
 }
 
 export const  getPermisosByProyect=async (proy)=>{
-   // const response= await apiIxachi.get('/miembro') 
+    // const response= await apiIxachi.get('/miembro') 
     const response= await apiIxachi.get('/permiso/lev/'+proy) 
+    return response
+}
+
+export const  getDatosByPerm=async (idPerm)=>{
+    const response= await apiIxachi.get('/permiso/'+idPerm) 
     return response
 }

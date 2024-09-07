@@ -1,5 +1,5 @@
 import { useState,useEffect } from "react";
-import { getPermisosByProyect } from "../services/permiso.service";
+import { getDatosByPerm, getPermisosByProyect } from "../services/permiso.service";
 import { useForm, Controller } from "react-hook-form";
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -7,9 +7,11 @@ import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { getProjects } from "../services/proyecto.service";
+import DetallePermiso from "../components/DetallePermiso";
 
 const Levantamientos = () => {
     const [permiso, setPermiso] = useState(null)
+    const [detallePerm, setDetallePem] = useState(null)
     const [permisos, setPermisos] = useState([])
     const [proyectos, setProyectos] = useState([])
     const [proyecto, setProyecto] = useState(null)
@@ -19,6 +21,7 @@ const Levantamientos = () => {
     const loadPermisos=async (proyecto)=>{
         try {
             const resp= await getPermisosByProyect(proyecto)
+            console.log(resp)
             if (resp.status==200 && resp.data) {
                // console.log(resp.data)
                 setPermisos(resp.data)  
@@ -44,12 +47,30 @@ const Levantamientos = () => {
             console.log(error)
         }
     }
+    
+    const loadDatosByPerm=async (id)=>{
+        try {
+            const resp= await getDatosByPerm(id)
+            if (resp.status==200 && resp.data) {
+                console.log(resp.data)
+                setDetallePem(resp.data)
+                //const newData =resp.data.map(option => ({ id: option.nombreProyecto, label: option.nombreProyecto}))
+               // setProyectos(resp.data)  
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     const onchangeProy =(proy) => { 
         console.log({proy})
         loadPermisos(proy)
     }
-
+    
+    const onchangePermiso =(idPermiso) => { 
+        console.log({idPermiso})
+        loadDatosByPerm(idPermiso)
+    }
     useEffect(() => {
        // loadPermisos()
         loadProyectos()
@@ -115,12 +136,58 @@ const Levantamientos = () => {
                         isOptionEqualToValue={(option, value) => option.IdPermiso === value.IdPermiso}
                         size="small"
                         options={permisos}
-                        getOptionLabel={(option) => option.predio.propietario.nombre+'/'+option.IdPermiso}
+                        getOptionLabel={(option) => option.propietario+'/'+option.IdPermiso}
                         sx={{ width: '100%'}}
                         value={permiso}
                         onChange={(event, newValue) => {
-                            onChange(newValue)
+                            onChange(newValue);
                             setPermiso(newValue);
+                            if(newValue   && newValue.IdPermiso){
+                                onchangePermiso(newValue.IdPermiso);
+                            }
+                        }}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                label="Permiso"
+                                variant="outlined"
+                                error={!!fieldState.error}
+                                helperText={fieldState.error?.message}
+                                type="text"
+                                sx={{ width: '100%'}}
+                
+                            />
+                            
+                        )}
+                        />
+                    )}
+                /> 
+            </div>
+        </div>
+        
+            <DetallePermiso detalle={detallePerm}/>
+        <div className="row">
+            <div className="col">
+                <Controller
+                    name="tipoLinea"
+                    control={control}
+                    rules={{
+                        required: "Selecciona el tipo de línea"
+                    }}
+                    render={({ field: { onChange, value },fieldState }) => (
+
+                        <Autocomplete
+                        id="combo-box-tipoLinea"
+                        isOptionEqualToValue={(option, value) => option.nombreProyecto === value.nombreProyecto}
+                        size="small"
+                        options={proyectos}
+                        getOptionLabel={(option) => option.nombreProyecto}
+                        sx={{ width: '100%'}}
+                        value={proyecto}
+                        onChange={(event, newValue) => {
+                            onChange(newValue)
+                            setProyecto(newValue);
+                            onchangeProy(newValue.nombreProyecto)
                             /*if(newValue  && destino && newValue.id==destino.id){
                                 setMiembros(null);
                             }*/
@@ -128,7 +195,91 @@ const Levantamientos = () => {
                         renderInput={(params) => (
                             <TextField
                                 {...params}
-                                label="Permiso"
+                                label="Tipo de Línea"
+                                variant="outlined"
+                                error={!!fieldState.error}
+                                helperText={fieldState.error?.message}
+                                type="text"
+                                sx={{ width: '100%'}}
+                
+                            />
+                            
+                        )}
+                        />
+                    )}
+                /> 
+            </div>
+            <div className="col">
+                <Controller
+                    name="linea "
+                    control={control}
+                    rules={{
+                        required: "Selecciona la línea"
+                    }}
+                    render={({ field: { onChange, value },fieldState }) => (
+
+                        <Autocomplete
+                        id="combo-box-linea"
+                        isOptionEqualToValue={(option, value) => option.nombreProyecto === value.nombreProyecto}
+                        size="small"
+                        options={proyectos}
+                        getOptionLabel={(option) => option.nombreProyecto}
+                        sx={{ width: '100%'}}
+                        value={proyecto}
+                        onChange={(event, newValue) => {
+                            onChange(newValue)
+                            setProyecto(newValue);
+                            onchangeProy(newValue.nombreProyecto)
+                            /*if(newValue  && destino && newValue.id==destino.id){
+                                setMiembros(null);
+                            }*/
+                        }}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                label="Línea"
+                                variant="outlined"
+                                error={!!fieldState.error}
+                                helperText={fieldState.error?.message}
+                                type="text"
+                                sx={{ width: '100%'}}
+                
+                            />
+                            
+                        )}
+                        />
+                    )}
+                /> 
+            </div>
+            <div className="col">
+                <Controller
+                    name="afectacion"
+                    control={control}
+                    rules={{
+                        required: "Selecciona la afectación"
+                    }}
+                    render={({ field: { onChange, value },fieldState }) => (
+
+                        <Autocomplete
+                        id="combo-box-afectacion"
+                        isOptionEqualToValue={(option, value) => option.nombreProyecto === value.nombreProyecto}
+                        size="small"
+                        options={proyectos}
+                        getOptionLabel={(option) => option.nombreProyecto}
+                        sx={{ width: '100%'}}
+                        value={proyecto}
+                        onChange={(event, newValue) => {
+                            onChange(newValue)
+                            setProyecto(newValue);
+                            onchangeProy(newValue.nombreProyecto)
+                            /*if(newValue  && destino && newValue.id==destino.id){
+                                setMiembros(null);
+                            }*/
+                        }}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                label="Afectación"
                                 variant="outlined"
                                 error={!!fieldState.error}
                                 helperText={fieldState.error?.message}
