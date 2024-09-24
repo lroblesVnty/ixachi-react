@@ -77,10 +77,12 @@ const Levantamientos = () => {
 
     const loadLineasByTipoProy=async(proy,tipo)=>{
         try {
+           
             const resp= await getLineaByProyTipo(proy,tipo)
             if (resp.status==200 && resp.data) {
+                setLinea(null)
                 console.log(resp.data)
-               // setDetallePem(resp.data)
+                setLineas(resp.data)
                 //const newData =resp.data.map(option => ({ id: option.nombreProyecto, label: option.nombreProyecto}))
                // setProyectos(resp.data)  
             }
@@ -93,12 +95,19 @@ const Levantamientos = () => {
         console.log({proy})
         console.log({proyecto})
         loadPermisos(proy)
+        if(tipoLinea){
+            console.log({tipoLinea})
+            loadLineasByTipoProy(proy,tipoLinea.id)
+            
+            
+        }
     }
     
-    const onchangeTipoLinea =(tipo) => { 
+    const onchangeTipoLinea =(tipo,{nombreProyecto}) => { 
         console.log({tipo})
+        console.log({nombreProyecto})
         if (!!proyecto) {
-            loadLineasByTipoProy(proyecto,tipo)
+            loadLineasByTipoProy(nombreProyecto,tipo)
         }
        
     }
@@ -229,7 +238,7 @@ const Levantamientos = () => {
                                     onChange(newValue)
                                     setTipoLinea(newValue);
                                     if(newValue   && newValue.id){
-                                        onchangeTipoLinea(newValue.id)
+                                        onchangeTipoLinea(newValue.id,proyecto)
                                     }
                                     /*if(newValue  && destino && newValue.id==destino.id){
                                         setMiembros(null);
@@ -263,16 +272,18 @@ const Levantamientos = () => {
 
                                 <Autocomplete
                                 id="combo-box-linea"
-                                //isOptionEqualToValue={(option, value) => option.nombreProyecto === value.nombreProyecto}
+                                isOptionEqualToValue={(option, value) => `"${option.linea}"` === `"${value.linea}"`}
                                 size="small"
                                 options={lineas}
-                               // getOptionLabel={(option) => option.nombreProyecto}
+                                getOptionLabel={(option) => `${option.linea}`}
                                 sx={{ width: '100%'}}
                                 value={linea}
                                 onChange={(event, newValue) => {
                                     onChange(newValue)
+                                    console.log(newValue)
                                   //  setProyecto(newValue);
-                                    onchangeProy(newValue.nombreProyecto)
+                                    setLinea(newValue)
+                                   // onchangeProy(newValue.nombreProyecto)
                                     /*if(newValue  && destino && newValue.id==destino.id){
                                         setMiembros(null);
                                     }*/
@@ -305,16 +316,16 @@ const Levantamientos = () => {
 
                                 <Autocomplete
                                 id="combo-box-afectacion"
-                                isOptionEqualToValue={(option, value) => option.nombreProyecto === value.nombreProyecto}
+                                //isOptionEqualToValue={(option, value) => option.nombreProyecto === value.nombreProyecto}
                                 size="small"
-                                options={lineas}
-                                getOptionLabel={(option) => option.nombreProyecto}
+                                options={[]}
+                                //getOptionLabel={(option) => option.nombreProyecto}
                                 sx={{ width: '100%'}}
-                                value={proyecto}
+                                //value={proyecto}
                                 onChange={(event, newValue) => {
                                     onChange(newValue)
-                                    setProyecto(newValue);
-                                    onchangeProy(newValue.nombreProyecto)
+                                   // setProyecto(newValue);
+                                   
                                     /*if(newValue  && destino && newValue.id==destino.id){
                                         setMiembros(null);
                                     }*/
