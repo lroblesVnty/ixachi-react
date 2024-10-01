@@ -11,6 +11,10 @@ import DetallePermiso from "../components/DetallePermiso";
 import AutoComplete from "../components/AutoComplete";
 import Button from '@mui/material/Button'
 import { Add, Remove } from "@mui/icons-material";
+import { getCultivos } from "../services/catalogs.service";
+import useFetch from "../hooks/useFetch";
+import { privateRoutes } from "../utils/routes";
+
 
 const Levantamientos = () => {
     const [permiso, setPermiso] = useState(null)
@@ -18,10 +22,14 @@ const Levantamientos = () => {
     const [permisos, setPermisos] = useState([])
     const [proyectos, setProyectos] = useState([])
     const [lineas, setLineas] = useState([])
+    const [cultivos, setCultivos] = useState([])
     const [proyecto, setProyecto] = useState(null)
+    const [cultivo, setCultivo] = useState(null)
     const [linea, setLinea] = useState(null)
     const [tipoLinea, setTipoLinea] = useState(null)
-
+    const {API_URL} =privateRoutes
+    const { data:listas, loading, error } = useFetch(`${API_URL}proyecto/dept`);//caragar los proyectos usando un custom-hook
+   
     //const {register, handleSubmit,formState: { errors},watch,reset,control} = useForm();
     const methods=useForm({ defaultValues: { name: "",email:"",edad:"" } });
     const {register, handleSubmit,formState: { errors,isDirty,isSubmitted,isValid},watch,reset,control} = methods;
@@ -55,6 +63,19 @@ const Levantamientos = () => {
                 //console.log(resp.data)
                 //const newData =resp.data.map(option => ({ id: option.nombreProyecto, label: option.nombreProyecto}))
                 setProyectos(resp.data)  
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const loadCultivos=async ()=>{
+        try {
+            const resp= await getCultivos()
+            if (resp.status==200 && resp.data) {
+                //console.log(resp.data)
+                //const newData =resp.data.map(option => ({ id: option.nombreProyecto, label: option.nombreProyecto}))
+                setCultivos(resp.data)  
             }
         } catch (error) {
             console.log(error)
@@ -119,6 +140,7 @@ const Levantamientos = () => {
     useEffect(() => {
        // loadPermisos()
         loadProyectos()
+        loadCultivos()
     },[]);//arreglo vacio para que no itere varias 
 
 
@@ -316,15 +338,15 @@ const Levantamientos = () => {
 
                                 <Autocomplete
                                 id="combo-box-afectacion"
-                                //isOptionEqualToValue={(option, value) => option.nombreProyecto === value.nombreProyecto}
+                                isOptionEqualToValue={(option, value) => option.idCultivo === value.idCultivo}
                                 size="small"
-                                options={[]}
-                                //getOptionLabel={(option) => option.nombreProyecto}
+                                options={cultivos}
+                                getOptionLabel={(option) => option.cultivo}
                                 sx={{ width: '100%'}}
                                 //value={proyecto}
                                 onChange={(event, newValue) => {
                                     onChange(newValue)
-                                   // setProyecto(newValue);
+                                    setCultivo(newValue);
                                    
                                     /*if(newValue  && destino && newValue.id==destino.id){
                                         setMiembros(null);
