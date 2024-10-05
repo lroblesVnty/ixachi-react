@@ -1,5 +1,5 @@
 import { useState,useEffect } from "react";
-import { getDatosByPerm, getPermisosByProyect } from "../services/permiso.service";
+import { getDatosByPerm, getEstacasBylinea, getEstacasFin, getPermisosByProyect } from "../services/permiso.service";
 import { useForm, FormProvider,Controller} from "react-hook-form"
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -27,8 +27,10 @@ const Levantamientos = () => {
     const [cultivo, setCultivo] = useState(null)
     const [linea, setLinea] = useState(null)
     const [tipoLinea, setTipoLinea] = useState(null)
+    const [estacas, setEstacas] = useState([])
+    const [estacasFin, setEstacasFin] = useState([])
     const {API_URL} =privateRoutes
-    const { data:listas, loading, error } = useFetch(`${API_URL}proyecto/dept`);//caragar los proyectos usando un custom-hook
+    //const { data:listas, loading, error } = useFetch(`${API_URL}proyecto/dept`);//*caragar los proyectos usando un custom-hook
    
     //const {register, handleSubmit,formState: { errors},watch,reset,control} = useForm();
     const methods=useForm({ defaultValues: { name: "",email:"",edad:"" } });
@@ -98,19 +100,50 @@ const Levantamientos = () => {
 
     const loadLineasByTipoProy=async(proy,tipo)=>{
         try {
-           
+            
             const resp= await getLineaByProyTipo(proy,tipo)
             if (resp.status==200 && resp.data) {
                 setLinea(null)
                 console.log(resp.data)
                 setLineas(resp.data)
                 //const newData =resp.data.map(option => ({ id: option.nombreProyecto, label: option.nombreProyecto}))
-               // setProyectos(resp.data)  
+                // setProyectos(resp.data)  
             }
         } catch (error) {
             console.log(error)
         }
     }
+
+    const loadEstacasByLinea=async(tipoLinea,linea)=>{
+        try {
+            const resp= await getEstacasBylinea(linea,tipoLinea.id)
+            if (resp.status==200 && resp.data) {
+                //console.log(resp.data)
+                //const newData =resp.data.map(option => ({ id: option.nombreProyecto, label: option.nombreProyecto}))
+                setEstacas(resp.data)  
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const loadEstacasFin=async(tipoLinea,linea,estaca)=>{
+        console.log({estaca})
+        console.log({linea})
+        console.log({tipoLinea})
+        try {
+            const resp= await getEstacasFin(linea,tipoLinea,estaca)
+            if (resp.status==200 && resp.data) {
+                //console.log(resp.data)
+                //const newData =resp.data.map(option => ({ id: option.nombreProyecto, label: option.nombreProyecto}))
+                setEstacasFin(resp.data)  
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+
 
     const onchangeProy =(proy) => { 
         console.log({proy})
@@ -137,6 +170,21 @@ const Levantamientos = () => {
         console.log({idPermiso})
         loadDatosByPerm(idPermiso)
     }
+    
+    const onchangeLinea=(linea) => { 
+        if(tipoLinea && linea){
+           loadEstacasByLinea(tipoLinea,linea)
+        }
+    }
+
+    const onchangeEstacaIni=(estaca) => { 
+      
+        if(tipoLinea && linea){
+            loadEstacasFin(tipoLinea.id,linea.linea,estaca.estaca)
+        }
+    }
+
+
     useEffect(() => {
        // loadPermisos()
         loadProyectos()
@@ -305,7 +353,7 @@ const Levantamientos = () => {
                                     console.log(newValue)
                                   //  setProyecto(newValue);
                                     setLinea(newValue)
-                                   // onchangeProy(newValue.nombreProyecto)
+                                    onchangeLinea(newValue.linea)
                                     /*if(newValue  && destino && newValue.id==destino.id){
                                         setMiembros(null);
                                     }*/
@@ -375,7 +423,7 @@ const Levantamientos = () => {
                     <div className="col">
                         {
                             proyectos &&  !!proyectos.length &&
-                            <AutoComplete nombre="estacai" label={"De Estaca"} data={proyectos} />
+                            <AutoComplete nombre="estacai" label={"De Estaca"} data={estacas} optLabel={'estaca'} handleChange={onchangeEstacaIni} />
                                     
                         }
                     </div>
@@ -383,7 +431,7 @@ const Levantamientos = () => {
                         <AutoComplete nombre="estacaIm" label={"+ Metros"} data={proyectos} />
                     </div>
                     <div className="col">
-                        <AutoComplete nombre="estacaf" label={"A Estaca"} data={proyectos} />
+                        <AutoComplete nombre="estacaf" label={"A Estaca"} data={estacasFin} optLabel={'estaca'} />
                     </div>
                     <div className="col">
                         <AutoComplete nombre="estacaFm" label={"+ Metros"} data={proyectos} />

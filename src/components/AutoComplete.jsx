@@ -3,7 +3,7 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { useState} from "react";
 
-const AutoComplete = ({nombre,label,data}) => {
+const AutoComplete = ({nombre,label,data,optLabel,handleChange}) => {
     const { control } = useFormContext();
     const [currentValue, setCurrentValue] = useState(null)
     return (
@@ -17,16 +17,21 @@ const AutoComplete = ({nombre,label,data}) => {
 
                 <Autocomplete
                 id={`combo-box-${nombre}`}
-                isOptionEqualToValue={(option, value) => option[nombre] === value[nombre]}
+                isOptionEqualToValue={(option, value) => ''+option[optLabel] === ''+value[optLabel]}
+                //isOptionEqualToValue={(option, value) => `"${option.optLabel}"` === `"${value.optLabel}"`}
                 size="small"
                 options={data}
-                getOptionLabel={(option) => option.nombreProyecto}
+                getOptionLabel={(option) => ''+option[optLabel]}
+               // getOptionLabel={(option) => `${option[optLabel]}`}
                 sx={{ width: '100%'}}
                 value={currentValue}
                 onChange={(event, newValue) => {
                     onChange(newValue)
                     setCurrentValue(newValue);
-                    console.log(newValue)
+                    if(handleChange){
+                        handleChange(newValue)
+                    }
+                   // console.log(newValue)
                     //onchangeProy(newValue.nombreProyecto)
                     /*if(newValue  && destino && newValue.id==destino.id){
                         setMiembros(null);

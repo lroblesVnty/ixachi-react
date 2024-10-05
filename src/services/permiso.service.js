@@ -20,3 +20,13 @@ export const  getDatosByPerm=async (idPerm)=>{
     const response= await apiIxachi.get('/permiso/'+idPerm) 
     return response
 }
+
+export const  getEstacasBylinea=async (linea,tipoLinea)=>{
+    const response= await apiIxachi.get(`/estacas?linea=${linea}&tipoLinea=${tipoLinea}`) 
+    return response
+
+}
+export const  getEstacasFin=async (linea,tipoLinea,estacaIni)=>{
+    const response= await apiIxachi.get(`/estacaFinal?linea=${linea}&tipoLinea=${tipoLinea}&estacaIni=${estacaIni}`) 
+    return response
+}
