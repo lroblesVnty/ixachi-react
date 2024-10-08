@@ -184,6 +184,9 @@ const Levantamientos = () => {
         }
     }
 
+    const onSubmit = async (data) =>{
+
+    }
 
     useEffect(() => {
        // loadPermisos()
@@ -195,7 +198,7 @@ const Levantamientos = () => {
   return (
     <>
         <FormProvider {...methods}>
-            <form >
+            <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="row justify-content-center">
                     <div className="col-lg-4">
                         <Controller
@@ -234,6 +237,7 @@ const Levantamientos = () => {
                                         error={!!fieldState.error}
                                         helperText={fieldState.error?.message}
                                         type="text"
+                                        
                                         sx={{ width: '100%'}}
                         
                                     />
@@ -428,13 +432,45 @@ const Levantamientos = () => {
                         }
                     </div>
                     <div className="col">
-                        <AutoComplete nombre="estacaIm" label={"+ Metros"} data={proyectos} />
+                        <Controller
+                            defaultValue=""
+                            name={"estacaIm"}
+                            control={control}
+                            rules={{
+                                valueAsNumber: {value:true,message:"Solo se permiten números"},
+                                maxLength:{value:20,message:'Solo se permiten 20 caracteres'},
+                                min:{value:1,message:"El dato debe ser mayor a 0"},  
+                            }}
+                            render={({ field: { onChange, value },fieldState }) => (
+                            <TextField id="estacaIm" label="+ Metros" variant="outlined"  onChange={onChange} value={value}  type="text"
+                                error={!!fieldState.error}
+                                helperText={fieldState.error?.message}
+                                size="small"
+                                sx={{width:'100%'}} />
+                            )}
+                        />
                     </div>
                     <div className="col">
                         <AutoComplete nombre="estacaf" label={"A Estaca"} data={estacasFin} optLabel={'estaca'} />
                     </div>
                     <div className="col">
-                        <AutoComplete nombre="estacaFm" label={"+ Metros"} data={proyectos} />
+                        <Controller
+                            defaultValue=""
+                            name={"estacaFm"}
+                            control={control}
+                            rules={{
+                                valueAsNumber: {value:true,message:"Solo se permiten números"},
+                                maxLength:{value:20,message:'Solo se permiten 20 caracteres'},
+                                min:{value:1,message:"El dato debe ser mayor a 0"},  
+                            }}
+                            render={({ field: { onChange, value },fieldState }) => (
+                            <TextField id="estacaFm" label="+ Metros" variant="outlined"  onChange={onChange} value={value}  type="text"
+                                error={!!fieldState.error}
+                                helperText={fieldState.error?.message}
+                                size="small"
+                                sx={{width:'100%'}} />
+                            )}
+                        />
                     </div>
                 </div>
 
@@ -450,6 +486,7 @@ const Levantamientos = () => {
                                     color: 'white',
                                 }
                             ,}}
+                            onClick={() => handleSubmit(onSubmit)()}
                         >
                             <Add/>
                         </Button>

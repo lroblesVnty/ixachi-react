@@ -5,8 +5,10 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import TextField from '@mui/material/TextField'
+import { useFormContext,Controller } from "react-hook-form"
 
 const DetallePermiso = ({detalle}) => {
+    const { control } = useFormContext()
       
     return (
         <>
@@ -27,6 +29,8 @@ const DetallePermiso = ({detalle}) => {
                             <LocalizationProvider  dateAdapter={AdapterDayjs} adapterLocale="es">
                                 <DatePicker 
                                     slotProps={{ textField: { size: 'small' } }}
+                                     size="small"
+                                    // label="Fecha levantamiento"
                                     //minDate={dayjs('2024-01-01')}
                                 />
                             </LocalizationProvider>
@@ -53,14 +57,22 @@ const DetallePermiso = ({detalle}) => {
                     <div className="row align-items-center">
                         <label htmlFor="inputPassword" className={`col-sm-12 col-lg-5 fw-bold ${styles.textColor}`} >Finiquito:</label>
                         <div className="col">
-                        <TextField
-                          id="finiquito"
-                          label="Finiquito"
-                          //value={}
-                          //onChange={}
-                          type='number'
-                          size="small"
-                          InputProps={{ inputProps: { min: "0", step: "1" } }}
+                        <Controller
+                            defaultValue=""
+                            name={"finiquito"}
+                            control={control}
+                            rules={{
+                                valueAsNumber: {value:true,message:"Solo se permiten números"},
+                                required:{value:true,message:'Ingresa el nombre'},
+                                maxLength:{value:120,message:'Solo se permiten 120 caracteres'},
+                            }}
+                            render={({ field: { onChange, value },fieldState }) => (
+                            <TextField id="finiquito" label="Finiquito" variant="outlined"  onChange={onChange} value={value}  type="text"
+                                error={!!fieldState.error}
+                                helperText={fieldState.error?.message}
+                                size="small"
+                                sx={{width:'100%'}} />
+                            )}
                         />
                         </div>
                     </div>
