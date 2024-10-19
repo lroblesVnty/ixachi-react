@@ -6,9 +6,12 @@ import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import TextField from '@mui/material/TextField'
 import { useFormContext,Controller } from "react-hook-form"
+import { useState } from "react";
 
 const DetallePermiso = ({detalle}) => {
     const { control } = useFormContext()
+    const [selectedDate, setSelectedDate] = useState(null);
+   
       
     return (
         <>
@@ -26,14 +29,37 @@ const DetallePermiso = ({detalle}) => {
                     <div className="row align-items-center">
                         <label htmlFor="inputPassword" className={`col-sm-12 col-lg-5 fw-bold ${styles.textColor}`}  >Fecha Levantamiento:</label>
                         <div className="col">
-                            <LocalizationProvider  dateAdapter={AdapterDayjs} adapterLocale="es">
-                                <DatePicker 
-                                    slotProps={{ textField: { size: 'small' } }}
-                                     size="small"
-                                    // label="Fecha levantamiento"
-                                    //minDate={dayjs('2024-01-01')}
-                                />
-                            </LocalizationProvider>
+                            <Controller
+                                //defaultValue={dayjs('2022-04-17')}
+                                name={"fechaLev"}
+                                control={control}
+                                rules={{
+                                   // valueAsNumber: {value:true,message:"Solo se permiten números"},
+                                    required:{value:true,message:'Selecciona la fecha de levantamiento'},
+                                   // maxLength:{value:120,message:'Solo se permiten 120 caracteres'},
+                                }}
+                                render={({ field: { onChange, value },fieldState }) => (
+                                    <LocalizationProvider  dateAdapter={AdapterDayjs} adapterLocale="es">
+                                        <DatePicker 
+                                            slotProps={{ textField: { size: 'small', error: !!fieldState.error, helperText: fieldState.error?.message } }}
+                                            size="small"
+                                            format='DD/MM/YYYY'
+                                            //onChange={onChange}
+                                            onChange={(newValue) => {
+                                                onChange(dayjs(newValue).format('DD-MM-YYYY'));
+                                                setSelectedDate(dayjs(newValue).format('DD-MM-YYYY'))
+
+                                            }} 
+                                            inputFormat="DD/MM/YYYY" 
+                                            //value={value ?? dayjs()} 
+                                            value={selectedDate ? dayjs(selectedDate) : null}
+                                            defaultValue={dayjs(Date)} 
+                                            // label="Fecha levantamiento"
+                                            //minDate={dayjs('2024-01-01')}
+                                        />
+                                    </LocalizationProvider>
+                                )}
+                            />
 
                         </div>
                     </div>

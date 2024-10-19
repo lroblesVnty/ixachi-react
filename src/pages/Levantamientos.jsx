@@ -29,11 +29,13 @@ const Levantamientos = () => {
     const [tipoLinea, setTipoLinea] = useState(null)
     const [estacas, setEstacas] = useState([])
     const [estacasFin, setEstacasFin] = useState([])
+    const [isRequired, setIsrequired] = useState(true)
     const {API_URL} =privateRoutes
     //const { data:listas, loading, error } = useFetch(`${API_URL}proyecto/dept`);//*caragar los proyectos usando un custom-hook
    
     //const {register, handleSubmit,formState: { errors},watch,reset,control} = useForm();
-    const methods=useForm({ defaultValues: { name: "",email:"",edad:"" } });
+    //const methods=useForm({ defaultValues: { name: "",email:"",edad:"" } });
+    const methods=useForm();
     const {register, handleSubmit,formState: { errors,isDirty,isSubmitted,isValid},watch,reset,control} = methods;
     const listTiposLinea = [
         { label: 'Ampliación', id: 'AMPLIACIÓN' },
@@ -157,12 +159,15 @@ const Levantamientos = () => {
         }
     }
     
-    const onchangeTipoLinea =(tipo,{nombreProyecto}) => { 
+    const onchangeTipoLinea =(tipo) => { 
         console.log({tipo})
-        console.log({nombreProyecto})
-        if (!!proyecto) {
-            loadLineasByTipoProy(nombreProyecto,tipo)
+        //console.log({nombreProyecto})
+        if (proyecto?.nombreProyecto) {
+            loadLineasByTipoProy(proyecto.nombreProyecto,tipo)
         }
+       /*  if (tipo=='AMPLIACIÓN') {
+            setIsrequired(false)
+        } */
        
     }
 
@@ -185,7 +190,7 @@ const Levantamientos = () => {
     }
 
     const onSubmit = async (data) =>{
-
+        console.log({data})
     }
 
     useEffect(() => {
@@ -312,7 +317,7 @@ const Levantamientos = () => {
                                     onChange(newValue)
                                     setTipoLinea(newValue);
                                     if(newValue   && newValue.id){
-                                        onchangeTipoLinea(newValue.id,proyecto)
+                                        onchangeTipoLinea(newValue.id)
                                     }
                                     /*if(newValue  && destino && newValue.id==destino.id){
                                         setMiembros(null);
@@ -427,7 +432,7 @@ const Levantamientos = () => {
                     <div className="col">
                         {
                             proyectos &&  !!proyectos.length &&
-                            <AutoComplete nombre="estacai" label={"De Estaca"} data={estacas} optLabel={'estaca'} handleChange={onchangeEstacaIni} />
+                            <AutoComplete nombre="estacai" label={"De Estaca"} data={estacas} optLabel={'estaca'}  handleChange={onchangeEstacaIni}  />
                                     
                         }
                     </div>
@@ -439,19 +444,29 @@ const Levantamientos = () => {
                             rules={{
                                 valueAsNumber: {value:true,message:"Solo se permiten números"},
                                 maxLength:{value:20,message:'Solo se permiten 20 caracteres'},
-                                min:{value:1,message:"El dato debe ser mayor a 0"},  
+                                min:{value:1,message:"El dato debe ser mayor a 0"},
+                                //disabled: true, 
+                                validate: { //?validate condicional
+                                    /*required: value => {
+                                        if (tipoLinea?.id=='OFFSET') return 'Dato requerido';
+                                        return true;
+                                    },*/
+                                    required: v => tipoLinea?.id=='OFFSET' || 'Dato requerido'
+                                },
+                                
                             }}
                             render={({ field: { onChange, value },fieldState }) => (
                             <TextField id="estacaIm" label="+ Metros" variant="outlined"  onChange={onChange} value={value}  type="text"
                                 error={!!fieldState.error}
                                 helperText={fieldState.error?.message}
+                                disabled={tipoLinea?.id=='AMPLIACIÓN'}
                                 size="small"
                                 sx={{width:'100%'}} />
                             )}
                         />
                     </div>
                     <div className="col">
-                        <AutoComplete nombre="estacaf" label={"A Estaca"} data={estacasFin} optLabel={'estaca'} />
+                        <AutoComplete nombre="estacaf" label={"A Estaca"} data={estacasFin} optLabel={'estaca'} isRequired={tipoLinea?.id=='RECEPTORA' ?true:false} isDisabled={tipoLinea?.id!='RECEPTORA' ?true:false}  />
                     </div>
                     <div className="col">
                         <Controller
@@ -462,11 +477,13 @@ const Levantamientos = () => {
                                 valueAsNumber: {value:true,message:"Solo se permiten números"},
                                 maxLength:{value:20,message:'Solo se permiten 20 caracteres'},
                                 min:{value:1,message:"El dato debe ser mayor a 0"},  
+                                 
                             }}
                             render={({ field: { onChange, value },fieldState }) => (
                             <TextField id="estacaFm" label="+ Metros" variant="outlined"  onChange={onChange} value={value}  type="text"
                                 error={!!fieldState.error}
                                 helperText={fieldState.error?.message}
+                                disabled={tipoLinea?.id!='RECEPTORA' ?true:false}
                                 size="small"
                                 sx={{width:'100%'}} />
                             )}
