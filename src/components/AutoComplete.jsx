@@ -20,7 +20,6 @@ const AutoComplete = ({nombre,label,data,optLabel,handleChange,isRequired=true,i
     }*/
     return (
         <Controller
-        //TODO validar que la estaca final solo se requiera cuando tipoLinea=RECEPTORA
             name={nombre}
             control={control}
             rules={{
@@ -45,8 +44,9 @@ const AutoComplete = ({nombre,label,data,optLabel,handleChange,isRequired=true,i
                 getOptionLabel={(option) => ''+option[optLabel]}
                // getOptionLabel={(option) => `${option[optLabel]}`}
                 sx={{ width: '100%'}}
-                value={currentValue}
+               // value={currentValue}
                 onChange={(event, newValue) => {
+                    console.log(newValue)
                     onChange(newValue)
                     setCurrentValue(newValue);
                     if(handleChange){

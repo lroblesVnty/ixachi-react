@@ -118,7 +118,7 @@ const Levantamientos = () => {
 
     const loadEstacasByLinea=async(tipoLinea,linea)=>{
         try {
-            const resp= await getEstacasBylinea(linea,tipoLinea.id)
+            const resp= await getEstacasBylinea(linea,tipoLinea)
             if (resp.status==200 && resp.data) {
                 //console.log(resp.data)
                 //const newData =resp.data.map(option => ({ id: option.nombreProyecto, label: option.nombreProyecto}))
@@ -153,7 +153,7 @@ const Levantamientos = () => {
         loadPermisos(proy)
         if(tipoLinea){
             console.log({tipoLinea})
-            loadLineasByTipoProy(proy,tipoLinea.id)
+            loadLineasByTipoProy(proy,tipoLinea)
             
             
         }
@@ -185,12 +185,19 @@ const Levantamientos = () => {
     const onchangeEstacaIni=(estaca) => { 
       
         if(tipoLinea && linea){
-            loadEstacasFin(tipoLinea.id,linea.linea,estaca.estaca)
+            loadEstacasFin(tipoLinea,linea.linea,estaca.estaca)
         }
     }
 
     const onSubmit = async (data) =>{
         console.log({data})
+        //const datos={};
+        data.estacaI=data.estacai.estaca;
+        data.estacaF=data.estacaf?data.estacaf.estaca:null;
+        delete data.estacai;
+        delete data.estacaf;
+        console.log(data)
+
     }
 
     useEffect(() => {
@@ -268,9 +275,9 @@ const Levantamientos = () => {
                                 options={permisos}
                                 getOptionLabel={(option) => option.propietario+'/'+option.IdPermiso}
                                 sx={{ width: '100%'}}
-                                value={permiso}
+                                //value={permiso}
                                 onChange={(event, newValue) => {
-                                    onChange(newValue);
+                                    onChange(newValue?.IdPermiso);
                                     setPermiso(newValue);
                                     if(newValue   && newValue.IdPermiso){
                                         onchangePermiso(newValue.IdPermiso);
@@ -305,19 +312,20 @@ const Levantamientos = () => {
                                 required: "Selecciona el tipo de línea"
                             }}
                             render={({ field: { onChange, value },fieldState }) => (
-
+//TODO revisar como mandar solo el id seleccionado al onsubmit
                                 <Autocomplete
                                 id="combo-box-tipoLinea"
                                 isOptionEqualToValue={(option, value) => option.id === value.id}
                                 size="small"
                                 options={listTiposLinea}
                                 sx={{ width: '100%'}}
-                                value={tipoLinea}
+                                //value={tipoLinea}//?quitar value para evitar error isOptionEqualToValue
                                 onChange={(event, newValue) => {
-                                    onChange(newValue)
-                                    setTipoLinea(newValue);
+                                    console.log(newValue)
+                                    onChange(newValue?.id)
+                                    setTipoLinea(newValue?.id);
                                     if(newValue   && newValue.id){
-                                        onchangeTipoLinea(newValue.id)
+                                        onchangeTipoLinea(newValue?.id)
                                     }
                                     /*if(newValue  && destino && newValue.id==destino.id){
                                         setMiembros(null);
@@ -356,10 +364,9 @@ const Levantamientos = () => {
                                 options={lineas}
                                 getOptionLabel={(option) => `${option.linea}`}
                                 sx={{ width: '100%'}}
-                                value={linea}
+                                //value={linea}
                                 onChange={(event, newValue) => {
-                                    onChange(newValue)
-                                    console.log(newValue)
+                                    onChange(newValue?.linea)//*pasar solo la linea al onsbumit y no todo el objeto
                                   //  setProyecto(newValue);
                                     setLinea(newValue)
                                     onchangeLinea(newValue.linea)
@@ -402,7 +409,7 @@ const Levantamientos = () => {
                                 sx={{ width: '100%'}}
                                 //value={proyecto}
                                 onChange={(event, newValue) => {
-                                    onChange(newValue)
+                                    onChange(newValue?.idCultivo)//*pasar solo el id al onsubmit
                                     setCultivo(newValue);
                                    
                                     /*if(newValue  && destino && newValue.id==destino.id){
@@ -446,27 +453,29 @@ const Levantamientos = () => {
                                 maxLength:{value:20,message:'Solo se permiten 20 caracteres'},
                                 min:{value:1,message:"El dato debe ser mayor a 0"},
                                 //disabled: true, 
-                                validate: { //?validate condicional
+                                //validate: { //?validate condicional
                                     /*required: value => {
                                         if (tipoLinea?.id=='OFFSET') return 'Dato requerido';
                                         return true;
                                     },*/
-                                    required: v => tipoLinea?.id=='OFFSET' || 'Dato requerido'
-                                },
+                                   // required: v =>  watch('tipoLinea') ==="OFFSET" || 'Dato requerido'
+                                //},
+                               // required: { value: true, message: "Repite tu password" },
+                               required:watch('tipoLinea') ==="OFFSET" ? 'Dato requerido' : false
                                 
                             }}
                             render={({ field: { onChange, value },fieldState }) => (
                             <TextField id="estacaIm" label="+ Metros" variant="outlined"  onChange={onChange} value={value}  type="text"
                                 error={!!fieldState.error}
                                 helperText={fieldState.error?.message}
-                                disabled={tipoLinea?.id=='AMPLIACIÓN'}
+                                disabled={tipoLinea=='AMPLIACIÓN'}
                                 size="small"
                                 sx={{width:'100%'}} />
                             )}
                         />
                     </div>
                     <div className="col">
-                        <AutoComplete nombre="estacaf" label={"A Estaca"} data={estacasFin} optLabel={'estaca'} isRequired={tipoLinea?.id=='RECEPTORA' ?true:false} isDisabled={tipoLinea?.id!='RECEPTORA' ?true:false}  />
+                        <AutoComplete nombre="estacaf" label={"A Estaca"} data={estacasFin} optLabel={'estaca'} isRequired={tipoLinea=='RECEPTORA' ?true:false} isDisabled={tipoLinea!='RECEPTORA' ?true:false}  />
                     </div>
                     <div className="col">
                         <Controller
@@ -483,7 +492,7 @@ const Levantamientos = () => {
                             <TextField id="estacaFm" label="+ Metros" variant="outlined"  onChange={onChange} value={value}  type="text"
                                 error={!!fieldState.error}
                                 helperText={fieldState.error?.message}
-                                disabled={tipoLinea?.id!='RECEPTORA' ?true:false}
+                                disabled={tipoLinea!='RECEPTORA' ?true:false}
                                 size="small"
                                 sx={{width:'100%'}} />
                             )}
