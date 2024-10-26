@@ -14,6 +14,7 @@ import { Add, Remove } from "@mui/icons-material";
 import { getCultivos } from "../services/catalogs.service";
 import useFetch from "../hooks/useFetch";
 import { privateRoutes } from "../utils/routes";
+import TablaLevs from "../components/TablaLevs";
 
 
 const Levantamientos = () => {
@@ -29,6 +30,7 @@ const Levantamientos = () => {
     const [tipoLinea, setTipoLinea] = useState(null)
     const [estacas, setEstacas] = useState([])
     const [estacasFin, setEstacasFin] = useState([])
+    const [filas, setFilas] = useState([])
     const [isRequired, setIsrequired] = useState(true)
     const {API_URL} =privateRoutes
     //const { data:listas, loading, error } = useFetch(`${API_URL}proyecto/dept`);//*caragar los proyectos usando un custom-hook
@@ -191,12 +193,19 @@ const Levantamientos = () => {
 
     const onSubmit = async (data) =>{
         console.log({data})
+        var mts=0,km=0;
         //const datos={};
-        data.estacaI=data.estacai.estaca;
+        /*data.estacaI=data.estacai.estaca;
         data.estacaF=data.estacaf?data.estacaf.estaca:null;
         delete data.estacai;
-        delete data.estacaf;
+        delete data.estacaf;*/
         console.log(data)
+        const has=0.0015;
+        var m2=has*10000;
+        var newRow={tipoLinea:data.tipoLinea,linea:data.linea,estacaI:data.estacai.estaca,estacaF:data.estacaF,mts:mts,km:km,m2:m2,ha:has,afectacion:data.afectacion}
+        console.log({newRow})
+        setFilas([...filas,newRow]);
+
 
     }
 
@@ -350,7 +359,7 @@ const Levantamientos = () => {
                     </div>
                     <div className="col">
                         <Controller
-                            name="linea "
+                            name="linea"
                             control={control}
                             rules={{
                                 required: "Selecciona la línea"
@@ -409,7 +418,8 @@ const Levantamientos = () => {
                                 sx={{ width: '100%'}}
                                 //value={proyecto}
                                 onChange={(event, newValue) => {
-                                    onChange(newValue?.idCultivo)//*pasar solo el id al onsubmit
+                                   // onChange(newValue?.idCultivo)//*pasar solo el id al onsubmit
+                                    onChange(newValue)
                                     setCultivo(newValue);
                                    
                                     /*if(newValue  && destino && newValue.id==destino.id){
@@ -500,7 +510,7 @@ const Levantamientos = () => {
                     </div>
                 </div>
 
-                <div className="row mt-4 justify-content-center">
+                <div className="row mt-4 justify-content-center mb-4">
                     <div className="col-2 text-center">
                         <Button
                             variant="contained"
@@ -530,6 +540,10 @@ const Levantamientos = () => {
                         </Button>
                     </div>
                 </div>
+                {
+                    filas &&  !!filas.length &&
+                    <TablaLevs data={filas}/>
+                }
             </form>
         </FormProvider>
     </>
