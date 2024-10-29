@@ -193,16 +193,33 @@ const Levantamientos = () => {
 
     const onSubmit = async (data) =>{
         console.log({data})
-        var mts=0,km=0;
+        var mts=0,km=0,m2=0;
+        var has,distancia=25;
         //const datos={};
         /*data.estacaI=data.estacai.estaca;
         data.estacaF=data.estacaf?data.estacaf.estaca:null;
         delete data.estacai;
         delete data.estacaf;*/
         console.log(data)
-        const has=0.0015;
-        var m2=has*10000;
-        var newRow={tipoLinea:data.tipoLinea,linea:data.linea,estacaI:data.estacai.estaca,estacaF:data.estacaF,mts:mts,km:km,m2:m2,ha:has,afectacion:data.afectacion}
+        if(data.tipoLinea=='AMPLIACIÓN'){
+            has=0.0015
+            m2=has*10000;
+        }else if(data.tipoLinea=='OFFSET'){
+            m2=data.estacaIm*2;
+            km=data.estacaIm/1000;
+            has=m2/10000;
+            mts=+data.estacaIm;
+        }else if(data.tipoLinea=='RECEPTORA'){
+            var long=((data.estacaf.estaca-data.estacai.estaca)*distancia)-Number(data.estacaIm)+Number(data.estacaFm)
+            //console.log(long)
+            km=long/1000
+            m2=long*2
+            has=m2/10000
+            mts=long
+
+        }
+        //TODO concatenar los +metros cuando hay valor y traer e valor de distancia del backend
+        var newRow={tipoLinea:data.tipoLinea,linea:data.linea,estacaI:data.estacai.estaca,estacaF:data.estacaf.estaca,mts:mts,km:km,m2:m2,ha:has,afectacion:data.afectacion}
         console.log({newRow})
         setFilas([...filas,newRow]);
 
@@ -475,7 +492,7 @@ const Levantamientos = () => {
                                 
                             }}
                             render={({ field: { onChange, value },fieldState }) => (
-                            <TextField id="estacaIm" label="+ Metros" variant="outlined"  onChange={onChange} value={value}  type="text"
+                            <TextField id="estacaIm" label="+ Metros" variant="outlined"  onChange={onChange} value={value}
                                 error={!!fieldState.error}
                                 helperText={fieldState.error?.message}
                                 disabled={tipoLinea=='AMPLIACIÓN'}

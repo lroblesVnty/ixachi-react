@@ -24,7 +24,7 @@ const TablaLevs = ({data}) => {
                                                 <td>{row.linea}</td>
                                                 <td>{row.estacaI}</td>
                                                 <td>{row.estacaF}</td>
-                                                <td>{row.metros}</td>
+                                                <td>{row.mts}</td>
                                                 <td>{row.km}</td>
                                                 <td>{row.m2}</td>
                                                 <td>{row.ha}</td>
