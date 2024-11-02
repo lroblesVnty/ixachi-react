@@ -1,5 +1,5 @@
 import { useState,useEffect } from "react";
-import { getDatosByPerm, getEstacasBylinea, getEstacasFin, getPermisosByProyect } from "../services/permiso.service";
+import { getDatosByPerm, getDistanciaByLinea, getEstacasBylinea, getEstacasFin, getPermisosByProyect } from "../services/permiso.service";
 import { useForm, FormProvider,Controller} from "react-hook-form"
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -32,6 +32,7 @@ const Levantamientos = () => {
     const [estacasFin, setEstacasFin] = useState([])
     const [filas, setFilas] = useState([])
     const [isRequired, setIsrequired] = useState(true)
+    const [distancia, setDistancia] = useState(0)
     const {API_URL} =privateRoutes
     //const { data:listas, loading, error } = useFetch(`${API_URL}proyecto/dept`);//*caragar los proyectos usando un custom-hook
    
@@ -147,6 +148,19 @@ const Levantamientos = () => {
         }
     }
 
+    const loadDistanciaByLinea=async(linea)=>{
+        try {
+            const resp= await getDistanciaByLinea(linea)
+            if (resp.status==200 && resp.data) {
+                console.log(resp.data)
+                //const newData =resp.data.map(option => ({ id: option.nombreProyecto, label: option.nombreProyecto}))
+                setDistancia(resp.data.distancia)  
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
 
 
     const onchangeProy =(proy) => { 
@@ -182,6 +196,7 @@ const Levantamientos = () => {
         if(tipoLinea && linea){
            loadEstacasByLinea(tipoLinea,linea)
         }
+        loadDistanciaByLinea(linea)
     }
 
     const onchangeEstacaIni=(estaca) => { 
@@ -194,7 +209,7 @@ const Levantamientos = () => {
     const onSubmit = async (data) =>{
         console.log({data})
         var mts=0,km=0,m2=0;
-        var has,distancia=25;
+        var has;
         //const datos={};
         /*data.estacaI=data.estacai.estaca;
         data.estacaF=data.estacaf?data.estacaf.estaca:null;
@@ -218,7 +233,7 @@ const Levantamientos = () => {
             mts=long
 
         }
-        //TODO concatenar los +metros cuando hay valor y traer e valor de distancia del backend
+        //TODO concatenar los +metros cuando hay valor y verificar que se cargue la distancia solo cuando es receptora
         var newRow={tipoLinea:data.tipoLinea,linea:data.linea,estacaI:data.estacai.estaca,estacaF:data.estacaf.estaca,mts:mts,km:km,m2:m2,ha:has,afectacion:data.afectacion}
         console.log({newRow})
         setFilas([...filas,newRow]);

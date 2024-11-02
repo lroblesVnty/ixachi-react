@@ -30,3 +30,8 @@ export const  getEstacasFin=async (linea,tipoLinea,estacaIni)=>{
     const response= await apiIxachi.get(`/estacaFinal?linea=${linea}&tipoLinea=${tipoLinea}&estacaIni=${estacaIni}`) 
     return response
 }
+
+export const  getDistanciaByLinea=async (linea)=>{
+    const response= await apiIxachi.get('/linea/distancia/'+linea) 
+    return response
+}
