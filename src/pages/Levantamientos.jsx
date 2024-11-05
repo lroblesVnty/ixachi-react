@@ -196,7 +196,11 @@ const Levantamientos = () => {
         if(tipoLinea && linea){
            loadEstacasByLinea(tipoLinea,linea)
         }
-        loadDistanciaByLinea(linea)
+        if(tipoLinea=='RECEPTORA'){
+            console.log('receptora')
+            loadDistanciaByLinea(linea)
+        }
+        //TODO si ya existe una linea de algun tipo, la estaca inicial debe ser la ultima que se agregó en la tabla
     }
 
     const onchangeEstacaIni=(estaca) => { 
@@ -233,8 +237,9 @@ const Levantamientos = () => {
             mts=long
 
         }
-        //TODO concatenar los +metros cuando hay valor y verificar que se cargue la distancia solo cuando es receptora
-        var newRow={tipoLinea:data.tipoLinea,linea:data.linea,estacaI:data.estacai.estaca,estacaF:data.estacaf.estaca,mts:mts,km:km,m2:m2,ha:has,afectacion:data.afectacion}
+        var estacaIni= data.estacaIm?`${data.estacai.estaca}+${data.estacaIm}`:data.estacai.estaca;
+        var estacaFin= data.estacaFm?`${data.estacaf.estaca}+${data.estacaFm}`:data.estacaf?.estaca;
+        var newRow={tipoLinea:data.tipoLinea,linea:data.linea,estacaI:estacaIni,estacaF:estacaFin,mts:mts,km:km,m2:m2,ha:has,afectacion:data.afectacion}
         console.log({newRow})
         setFilas([...filas,newRow]);
 
