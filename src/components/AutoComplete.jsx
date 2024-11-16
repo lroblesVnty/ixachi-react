@@ -44,6 +44,7 @@ const AutoComplete = ({nombre,label,data,optLabel,handleChange,isRequired=true,i
                 getOptionLabel={(option) => ''+option[optLabel]}
                // getOptionLabel={(option) => `${option[optLabel]}`}
                 sx={{ width: '100%'}}
+                value={value || null}
                // value={currentValue}
                 onChange={(event, newValue) => {
                     console.log(newValue)

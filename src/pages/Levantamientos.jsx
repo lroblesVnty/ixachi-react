@@ -18,6 +18,12 @@ import TablaLevs from "../components/TablaLevs";
 
 
 const Levantamientos = () => {
+    const listTiposLinea = [
+        { label: 'Ampliación', id: 'AMPLIACIÓN'},
+        { label: 'Offset', id: 'OFFSET' },
+        { label: 'Receptora', id: 'RECEPTORA'}
+    ]; 
+      
     const [permiso, setPermiso] = useState(null)
     const [detallePerm, setDetallePem] = useState(null)
     const [permisos, setPermisos] = useState([])
@@ -39,12 +45,7 @@ const Levantamientos = () => {
     //const {register, handleSubmit,formState: { errors},watch,reset,control} = useForm();
     //const methods=useForm({ defaultValues: { name: "",email:"",edad:"" } });
     const methods=useForm();
-    const {register, handleSubmit,formState: { errors,isDirty,isSubmitted,isValid},watch,reset,control} = methods;
-    const listTiposLinea = [
-        { label: 'Ampliación', id: 'AMPLIACIÓN' },
-        { label: 'Offset', id: 'OFFSET' },
-        { label: 'Receptora', id: 'RECEPTORA'},
-    ];
+    const {register, handleSubmit,formState: { errors,isDirty,isSubmitted,isValid},watch,reset,resetField,control} = methods;
 
     const loadPermisos=async (proyecto)=>{
         try {
@@ -123,6 +124,7 @@ const Levantamientos = () => {
         try {
             const resp= await getEstacasBylinea(linea,tipoLinea)
             if (resp.status==200 && resp.data) {
+                resetField("estacai") 
                 //console.log(resp.data)
                 //const newData =resp.data.map(option => ({ id: option.nombreProyecto, label: option.nombreProyecto}))
                 setEstacas(resp.data)  
@@ -139,9 +141,14 @@ const Levantamientos = () => {
         try {
             const resp= await getEstacasFin(linea,tipoLinea,estaca)
             if (resp.status==200 && resp.data) {
+                resetField("estacaf") 
                 //console.log(resp.data)
                 //const newData =resp.data.map(option => ({ id: option.nombreProyecto, label: option.nombreProyecto}))
-                setEstacasFin(resp.data)  
+                if(tipoLinea=='RECEPTORA'){
+                    setEstacasFin(resp.data)  
+                }else{
+                    setEstacas(resp.data)
+                }
             }
         } catch (error) {
             console.log(error)
@@ -193,20 +200,27 @@ const Levantamientos = () => {
     }
     
     const onchangeLinea=(linea) => { 
-        if(tipoLinea && linea){
-           loadEstacasByLinea(tipoLinea,linea)
-        }
         if(tipoLinea=='RECEPTORA'){
             console.log('receptora')
             loadDistanciaByLinea(linea)
         }
+        console.log(filas.length)
+
+        if (filas.length>0) {
+            if (checkAvailability(filas,tipoLinea)) {
+                loadEstacasFin(tipoLinea,linea,estacas.estaca)
+            }
+        }
+        if(tipoLinea && linea){
+            loadEstacasByLinea(tipoLinea,linea)
+         }
         //TODO si ya existe una linea de algun tipo, la estaca inicial debe ser la ultima que se agregó en la tabla
     }
 
     const onchangeEstacaIni=(estaca) => { 
-      
-        if(tipoLinea && linea){
-            loadEstacasFin(tipoLinea,linea.linea,estaca.estaca)
+        //en loadEstacasFin borrar el valor del select antes de asignar valores a la lista de estacas
+        if(tipoLinea=='RECEPTORA' && linea && estaca){
+            loadEstacasFin(tipoLinea,linea.linea,estaca?.estaca)
         }
     }
 
@@ -242,10 +256,25 @@ const Levantamientos = () => {
         var newRow={tipoLinea:data.tipoLinea,linea:data.linea,estacaI:estacaIni,estacaF:estacaFin,mts:mts,km:km,m2:m2,ha:has,afectacion:data.afectacion}
         console.log({newRow})
         setFilas([...filas,newRow]);
-
+        //reset()
+        reset({
+            tipoLinea: null,
+            linea: null,
+            afectacion:null,
+            estacai:null,
+            estacaIm:"",
+            estacaf:null,
+            estacaFm:""
+        })
+        //TODO si ya existe una linea de algun tipo, la estaca inicial debe ser la ultima que se agregó en la tabla
+        //TODO cuando se agrega otra linea a la tabla, los primeros campos no los detecta aunque tengan dato
 
     }
 
+    function checkAvailability(arr, val) {
+        return arr.some((arrVal) => val === arrVal);
+    }
+    const handleClick = () => resetField("estacai")
     useEffect(() => {
        // loadPermisos()
         loadProyectos()
@@ -355,32 +384,38 @@ const Levantamientos = () => {
                             name="tipoLinea"
                             control={control}
                             rules={{
-                                required: "Selecciona el tipo de línea"
+                                required: "Selecciona el tipo de linea"
                             }}
                             render={({ field: { onChange, value },fieldState }) => (
-//TODO revisar como mandar solo el id seleccionado al onsubmit
                                 <Autocomplete
-                                id="combo-box-tipoLinea"
-                                isOptionEqualToValue={(option, value) => option.id === value.id}
+                                id="combo-box-tipo-Linea"
+                                //isOptionEqualToValue={(option, value) => option.val === value.val}
+                                
                                 size="small"
                                 options={listTiposLinea}
+                                //getOptionLabel={(option) =>  option.label }
                                 sx={{ width: '100%'}}
-                                //value={tipoLinea}//?quitar value para evitar error isOptionEqualToValue
+                                //value={proyecto}
+                                //value={value || null}//?para poder resetear el campo, se debe usar el value
+                                value={
+                                    value
+                                    ? listTiposLinea.find((option) => {
+                                        return value === option.id;
+                                        }) ?? null
+                                    : null
+                                }
                                 onChange={(event, newValue) => {
-                                    console.log(newValue)
-                                    onChange(newValue?.id)
+                                   // onChange(newValue?.idCultivo)//*pasar solo el id al onsubmit
+                                     onChange(newValue ? newValue.id : null);
                                     setTipoLinea(newValue?.id);
                                     if(newValue   && newValue.id){
                                         onchangeTipoLinea(newValue?.id)
                                     }
-                                    /*if(newValue  && destino && newValue.id==destino.id){
-                                        setMiembros(null);
-                                    }*/
                                 }}
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
-                                        label="Tipo de Línea"
+                                        label="Tipo Linea"
                                         variant="outlined"
                                         error={!!fieldState.error}
                                         helperText={fieldState.error?.message}
@@ -393,13 +428,14 @@ const Levantamientos = () => {
                                 />
                             )}
                         /> 
+                       
                     </div>
                     <div className="col">
                         <Controller
                             name="linea"
                             control={control}
                             rules={{
-                                required: "Selecciona la línea"
+                                required: "Selecciona la linea"
                             }}
                             render={({ field: { onChange, value },fieldState }) => (
 
@@ -410,11 +446,20 @@ const Levantamientos = () => {
                                 options={lineas}
                                 getOptionLabel={(option) => `${option.linea}`}
                                 sx={{ width: '100%'}}
-                                //value={linea}
+                                //value={proyecto}
+                                value={
+                                    value
+                                    ? lineas.find((option) => {
+                                        return value === option.linea;
+                                        }) ?? null
+                                    : null
+                                }
                                 onChange={(event, newValue) => {
-                                    onChange(newValue?.linea)//*pasar solo la linea al onsbumit y no todo el objeto
-                                  //  setProyecto(newValue);
-                                    setLinea(newValue)
+                                    console.log(newValue.linea)
+                                   // onChange(newValue?.idCultivo)//*pasar solo el id al onsubmit
+                                   // onChange(newValue)//*pasar solo la linea al onsbumit y no todo el objeto
+                                   onChange(newValue ? newValue.linea : null);
+                                    setLinea(newValue);
                                     onchangeLinea(newValue.linea)
                                     /*if(newValue  && destino && newValue.id==destino.id){
                                         setMiembros(null);
@@ -454,6 +499,7 @@ const Levantamientos = () => {
                                 getOptionLabel={(option) => option.cultivo}
                                 sx={{ width: '100%'}}
                                 //value={proyecto}
+                                value={value || null}//?para poder resetear el campo, se debe usar el value
                                 onChange={(event, newValue) => {
                                    // onChange(newValue?.idCultivo)//*pasar solo el id al onsubmit
                                     onChange(newValue)
