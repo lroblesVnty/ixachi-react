@@ -45,7 +45,10 @@ const Levantamientos = () => {
     //const {register, handleSubmit,formState: { errors},watch,reset,control} = useForm();
     //const methods=useForm({ defaultValues: { name: "",email:"",edad:"" } });
     const methods=useForm();
-    const {register, handleSubmit,formState: { errors,isDirty,isSubmitted,isValid},watch,reset,resetField,control} = methods;
+    const methodss=useForm();
+    const {register, handleSubmit,formState: { errors,isDirty,isSubmitted,isValid},watch,reset,resetField,control,clearErrors,setValue} = methods;
+
+    const {handleSubmit:submitForm,control:control2} = methodss;
 
     const loadPermisos=async (proyecto)=>{
         try {
@@ -204,16 +207,23 @@ const Levantamientos = () => {
             console.log('receptora')
             loadDistanciaByLinea(linea)
         }
-        console.log(filas.length)
+        console.log(filas.tipoLinea)
 
         if (filas.length>0) {
-            if (checkAvailability(filas,tipoLinea)) {
-                loadEstacasFin(tipoLinea,linea,estacas.estaca)
+            //if (checkAvailability(filas,tipoLinea)) {
+            if (findLastTipoLinea(filas,tipoLinea)) {
+                var lastLinea=findLastTipoLinea(filas,tipoLinea);
+                console.log({lastLinea})
+                const partes = lastLinea.estacaI.split("+");
+                var lastEstaca
+                lastEstaca=partes.length === 2?partes[0]:lastLinea.estacaI;
+                console.log("lastEstaca +:",lastEstaca);
+                
+                loadEstacasFin(tipoLinea,linea,lastEstaca)
             }
-        }
-        if(tipoLinea && linea){
+        }else if(tipoLinea && linea){
             loadEstacasByLinea(tipoLinea,linea)
-         }
+        }
         //TODO si ya existe una linea de algun tipo, la estaca inicial debe ser la ultima que se agregó en la tabla
     }
 
@@ -226,6 +236,7 @@ const Levantamientos = () => {
 
     const onSubmit = async (data) =>{
         console.log({data})
+        console.log({errors})
         var mts=0,km=0,m2=0;
         var has;
         //const datos={};
@@ -233,7 +244,6 @@ const Levantamientos = () => {
         data.estacaF=data.estacaf?data.estacaf.estaca:null;
         delete data.estacai;
         delete data.estacaf;*/
-        console.log(data)
         if(data.tipoLinea=='AMPLIACIÓN'){
             has=0.0015
             m2=has*10000;
@@ -266,15 +276,28 @@ const Levantamientos = () => {
             estacaf:null,
             estacaFm:""
         })
+        setValue('proyecto', data.proyecto);
+        setValue('permiso', data.permiso);
+        setValue('fechaLev', data.fechaLev);
+        setValue('finiquito', data.finiquito);
+        clearErrors()
         //TODO si ya existe una linea de algun tipo, la estaca inicial debe ser la ultima que se agregó en la tabla
         //TODO cuando se agrega otra linea a la tabla, los primeros campos no los detecta aunque tengan dato
 
     }
 
+    const onSubmitChild = (data) => { 
+        console.log('Child Data:', data); 
+        //methods.handleSubmit(onSubmitParent)(data); 
+    };
+
     function checkAvailability(arr, val) {
-        return arr.some((arrVal) => val === arrVal);
+        return arr.some((arrVal) => val === arrVal.tipoLinea);
     }
-    const handleClick = () => resetField("estacai")
+
+    function findLastTipoLinea(arr, val) {
+        return arr.find((value) => value.tipoLinea === val);
+    }
     useEffect(() => {
        // loadPermisos()
         loadProyectos()
@@ -284,15 +307,15 @@ const Levantamientos = () => {
 
   return (
     <>
-        <FormProvider {...methods}>
-            <form onSubmit={handleSubmit(onSubmit)}>
+        <FormProvider {...methodss}>
+            <form onSubmit={submitForm(onSubmitChild)}>
                 <div className="row justify-content-center">
                     <div className="col-lg-4">
                         <Controller
                             name="proyecto"
                             control={control}
                             rules={{
-                                required: "Selecciona un Proyecto"
+                               // required: "Selecciona un Proyecto"
                             }}
                             render={({ field: { onChange, value },fieldState }) => (
 
@@ -337,7 +360,7 @@ const Levantamientos = () => {
                     <div className="col-lg-6">
                         <Controller
                             name="permiso"
-                            control={control}
+                            control={control2}
                             rules={{
                                 required: "Selecciona un permiso"
                             }}
@@ -377,7 +400,12 @@ const Levantamientos = () => {
                     </div>
                 </div>
                 
-                <DetallePermiso detalle={detallePerm}/>
+                <DetallePermiso detalle={detallePerm} onsumit={onSubmitChild}/>
+            </form>
+        </FormProvider>
+
+        <FormProvider {...methods}>
+            <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="row">
                     <div className="col">
                         <Controller
@@ -629,6 +657,24 @@ const Levantamientos = () => {
                 }
             </form>
         </FormProvider>
+        <div className="row justify-content-center mt-4">
+            <div className="col-lg-3">
+                <Button
+                    variant="contained"
+                    size="small"
+                    sx={{'backgroundColor':'rgb(255, 165, 0)',
+                        ':hover': {
+                            // bgcolor: '#09A28A', // theme.palette.primary.main
+                            bgcolor:'rgb(245, 177, 52)',
+                            color: 'white',
+                        }
+                    ,}}
+                    onClick={() => submitForm(onSubmitChild)()}
+                >
+                Enviar
+                </Button>
+            </div>
+        </div>
     </>
   
   )
