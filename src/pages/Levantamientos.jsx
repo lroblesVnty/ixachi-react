@@ -1,10 +1,9 @@
 import { useState,useEffect } from "react";
 import { getDatosByPerm, getDistanciaByLinea, getEstacasBylinea, getEstacasFin, getPermisosByProyect } from "../services/permiso.service";
 import { useForm, FormProvider,Controller} from "react-hook-form"
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
 //import LoadingButton from '@mui/lab/LoadingButton';
 import TextField from '@mui/material/TextField';
+import Alert from '@mui/material/Alert';
 import Autocomplete from '@mui/material/Autocomplete';
 import { getLineaByProyTipo, getProjects } from "../services/proyecto.service";
 import DetallePermiso from "../components/DetallePermiso";
@@ -39,6 +38,7 @@ const Levantamientos = () => {
     const [filas, setFilas] = useState([])
     const [isRequired, setIsrequired] = useState(true)
     const [distancia, setDistancia] = useState(0)
+    const [error,setError]=useState(null); 
     const {API_URL} =privateRoutes
     //const { data:listas, loading, error } = useFetch(`${API_URL}proyecto/dept`);//*caragar los proyectos usando un custom-hook
    
@@ -287,6 +287,10 @@ const Levantamientos = () => {
     }
 
     const onSubmitChild = (data) => { 
+        if (filas.length==0) {
+            setError('No hay filas en la tabla');
+            return false;
+        }
         console.log('Child Data:', data); 
         //methods.handleSubmit(onSubmitParent)(data); 
     };
@@ -657,6 +661,18 @@ const Levantamientos = () => {
                 }
             </form>
         </FormProvider>
+        <div className="row">
+            <div className="col">
+                {
+                    error &&
+                   
+                    <Alert variant="outlined" severity="error">
+                        {error}
+                    </Alert>       
+                    //TODO agregar sweetAlert   
+                }
+            </div>
+        </div>
         <div className="row justify-content-center mt-4">
             <div className="col-lg-3">
                 <Button
