@@ -13,7 +13,8 @@ const TablaLevs = ({data}) => {
                                             <th scope="col">Km</th>  
                                             <th scope="col">m2</th>
                                             <th scope="col">Ha </th>
-                                            <th scope="col">Afectación </th>                                            
+                                            <th scope="col">Afectación</th>       
+                                            <th> </th>                                     
                                         
                                             </tr>
                                         </thead>
@@ -24,11 +25,20 @@ const TablaLevs = ({data}) => {
                                                 <td>{row.linea}</td>
                                                 <td>{row.estacaI}</td>
                                                 <td>{row.estacaF}</td>
-                                                <td>{row.mts}</td>
+                                                <td>{row.metros}</td>
                                                 <td>{row.km}</td>
-                                                <td>{row.m2}</td>
+                                                <td>{row.metros2}</td>
                                                 <td>{row.ha}</td>
                                                 <td>{row.afectacion.cultivo}</td>
+                                                <td>
+                                                    <button
+                                                    value={data.id}
+                                                    onClick={(e) => singleDelete(e, data.id)}
+                                                    className="btn btn-danger"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </td>
                                             </tr>
                                         )} 
                                            

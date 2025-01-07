@@ -1,5 +1,5 @@
 import { useState,useEffect } from "react";
-import { getDatosByPerm, getDistanciaByLinea, getEstacasBylinea, getEstacasFin, getPermisosByProyect } from "../services/permiso.service";
+import { addLevantamiento, getDatosByPerm, getDistanciaByLinea, getEstacasBylinea, getEstacasFin, getPermisosByProyect } from "../services/permiso.service";
 import { useForm, FormProvider,Controller} from "react-hook-form"
 //import LoadingButton from '@mui/lab/LoadingButton';
 import TextField from '@mui/material/TextField';
@@ -18,9 +18,9 @@ import TablaLevs from "../components/TablaLevs";
 
 const Levantamientos = () => {
     const listTiposLinea = [
-        { label: 'Ampliación', id: 'AMPLIACIÓN'},
-        { label: 'Offset', id: 'OFFSET' },
-        { label: 'Receptora', id: 'RECEPTORA'}
+        { label: 'Ampliación', id: 'A'},
+        { label: 'Offset', id: 'O' },
+        { label: 'Receptora', id: 'R'}
     ]; 
       
     const [permiso, setPermiso] = useState(null)
@@ -147,7 +147,7 @@ const Levantamientos = () => {
                 resetField("estacaf") 
                 //console.log(resp.data)
                 //const newData =resp.data.map(option => ({ id: option.nombreProyecto, label: option.nombreProyecto}))
-                if(tipoLinea=='RECEPTORA'){
+                if(tipoLinea=='R'){
                     setEstacasFin(resp.data)  
                 }else{
                     setEstacas(resp.data)
@@ -203,7 +203,7 @@ const Levantamientos = () => {
     }
     
     const onchangeLinea=(linea) => { 
-        if(tipoLinea=='RECEPTORA'){
+        if(tipoLinea=='R'){
             console.log('receptora')
             loadDistanciaByLinea(linea)
         }
@@ -229,7 +229,7 @@ const Levantamientos = () => {
 
     const onchangeEstacaIni=(estaca) => { 
         //en loadEstacasFin borrar el valor del select antes de asignar valores a la lista de estacas
-        if(tipoLinea=='RECEPTORA' && linea && estaca){
+        if(tipoLinea=='R' && linea && estaca){
             loadEstacasFin(tipoLinea,linea.linea,estaca?.estaca)
         }
     }
@@ -244,15 +244,15 @@ const Levantamientos = () => {
         data.estacaF=data.estacaf?data.estacaf.estaca:null;
         delete data.estacai;
         delete data.estacaf;*/
-        if(data.tipoLinea=='AMPLIACIÓN'){
+        if(data.tipoLinea=='A'){
             has=0.0015
             m2=has*10000;
-        }else if(data.tipoLinea=='OFFSET'){
+        }else if(data.tipoLinea=='O'){
             m2=data.estacaIm*2;
             km=data.estacaIm/1000;
             has=m2/10000;
             mts=+data.estacaIm;
-        }else if(data.tipoLinea=='RECEPTORA'){
+        }else if(data.tipoLinea=='R'){
             var long=((data.estacaf.estaca-data.estacai.estaca)*distancia)-Number(data.estacaIm)+Number(data.estacaFm)
             //console.log(long)
             km=long/1000
@@ -263,7 +263,7 @@ const Levantamientos = () => {
         }
         var estacaIni= data.estacaIm?`${data.estacai.estaca}+${data.estacaIm}`:data.estacai.estaca;
         var estacaFin= data.estacaFm?`${data.estacaf.estaca}+${data.estacaFm}`:data.estacaf?.estaca;
-        var newRow={tipoLinea:data.tipoLinea,linea:data.linea,estacaI:estacaIni,estacaF:estacaFin,mts:mts,km:km,m2:m2,ha:has,afectacion:data.afectacion}
+        var newRow={tipoLinea:data.tipoLinea,linea:data.linea,estacaI:estacaIni,estacaF:estacaFin?? null,metros:mts,km:km,metros2:m2,ha:has,afectacion:data.afectacion,cultivo:data.afectacion.idCultivo,estacaInim:data.estacaIm,estacaFinm:data.estacaFm,estacaIni:data.estacai.estaca,estacaFin:data.estacaf.estaca??null}
         console.log({newRow})
         setFilas([...filas,newRow]);
         //reset()
@@ -277,7 +277,7 @@ const Levantamientos = () => {
             estacaFm:""
         })
         setValue('proyecto', data.proyecto);
-        setValue('permiso', data.permiso);
+        setValue('idPermiso', data.idPermiso);
         setValue('fechaLev', data.fechaLev);
         setValue('finiquito', data.finiquito);
         clearErrors()
@@ -286,12 +286,25 @@ const Levantamientos = () => {
 
     }
 
-    const onSubmitChild = (data) => { 
+    const onSubmitChild = async (data) => { 
         if (filas.length==0) {
             setError('No hay filas en la tabla');
             return false;
         }
+
+        data.detalleLev=filas
+        data.finiquito= +data.finiquito
+        data.idPersonal=57//TODO colocar el id del personal en sesion activo
+        data.observaciones=null//TODO colocar el valor del campo de observaciones
         console.log('Child Data:', data); 
+        try {
+            const resp= await addLevantamiento(data)
+            console.log(resp)
+            //TODO falta arreglar error cuando se manda el tipo de linea y falta agregar el idPersonal
+            //TODO falata funcion para quitar una fila de la tabla y que no se mande al backend 
+        } catch (error) {
+            console.error(error)
+        }
         //methods.handleSubmit(onSubmitParent)(data); 
     };
 
@@ -363,7 +376,7 @@ const Levantamientos = () => {
                     </div>
                     <div className="col-lg-6">
                         <Controller
-                            name="permiso"
+                            name="idPermiso"
                             control={control2}
                             rules={{
                                 required: "Selecciona un permiso"
@@ -487,12 +500,15 @@ const Levantamientos = () => {
                                     : null
                                 }
                                 onChange={(event, newValue) => {
-                                    console.log(newValue.linea)
+                                    console.log(newValue)
                                    // onChange(newValue?.idCultivo)//*pasar solo el id al onsubmit
                                    // onChange(newValue)//*pasar solo la linea al onsbumit y no todo el objeto
                                    onChange(newValue ? newValue.linea : null);
                                     setLinea(newValue);
-                                    onchangeLinea(newValue.linea)
+                                    if(newValue && newValue.linea){
+                                        onchangeLinea(newValue.linea) 
+                                    }
+                                    
                                     /*if(newValue  && destino && newValue.id==destino.id){
                                         setMiembros(null);
                                     }*/
@@ -586,21 +602,21 @@ const Levantamientos = () => {
                                    // required: v =>  watch('tipoLinea') ==="OFFSET" || 'Dato requerido'
                                 //},
                                // required: { value: true, message: "Repite tu password" },
-                               required:watch('tipoLinea') ==="OFFSET" ? 'Dato requerido' : false
+                               required:watch('tipoLinea') ==="O" ? 'Dato requerido' : false
                                 
                             }}
                             render={({ field: { onChange, value },fieldState }) => (
                             <TextField id="estacaIm" label="+ Metros" variant="outlined"  onChange={onChange} value={value}
                                 error={!!fieldState.error}
                                 helperText={fieldState.error?.message}
-                                disabled={tipoLinea=='AMPLIACIÓN'}
+                                disabled={tipoLinea=='A'}
                                 size="small"
                                 sx={{width:'100%'}} />
                             )}
                         />
                     </div>
                     <div className="col">
-                        <AutoComplete nombre="estacaf" label={"A Estaca"} data={estacasFin} optLabel={'estaca'} isRequired={tipoLinea=='RECEPTORA' ?true:false} isDisabled={tipoLinea!='RECEPTORA' ?true:false}  />
+                        <AutoComplete nombre="estacaf" label={"A Estaca"} data={estacasFin} optLabel={'estaca'} isRequired={tipoLinea=='R' ?true:false} isDisabled={tipoLinea!='R' ?true:false}  />
                     </div>
                     <div className="col">
                         <Controller
@@ -617,7 +633,7 @@ const Levantamientos = () => {
                             <TextField id="estacaFm" label="+ Metros" variant="outlined"  onChange={onChange} value={value}  type="text"
                                 error={!!fieldState.error}
                                 helperText={fieldState.error?.message}
-                                disabled={tipoLinea!='RECEPTORA' ?true:false}
+                                disabled={tipoLinea!='R' ?true:false}
                                 size="small"
                                 sx={{width:'100%'}} />
                             )}

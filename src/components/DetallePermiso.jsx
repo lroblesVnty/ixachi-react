@@ -46,8 +46,8 @@ const DetallePermiso = ({detalle,onSubmit}) => {
                                                 format='DD/MM/YYYY'
                                                 //onChange={onChange}
                                                 onChange={(newValue) => {
-                                                    onChange(dayjs(newValue).format('DD-MM-YYYY'));
-                                                    setSelectedDate(dayjs(newValue).format('DD-MM-YYYY'))
+                                                    onChange(dayjs(newValue).format('DD/MM/YYYY'));
+                                                    setSelectedDate(dayjs(newValue).format('DD/MM/YYYY'))
 
                                                 }} 
                                                 inputFormat="DD/MM/YYYY" 

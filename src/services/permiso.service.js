@@ -10,6 +10,11 @@ export const  addMember=async (data)=>{
     return response
 }
 
+export const  addLevantamiento=async (data)=>{
+    const response= await apiIxachi.post('/levantamientos',data) 
+    return response
+}
+
 export const  getPermisosByProyect=async (proy)=>{
     // const response= await apiIxachi.get('/miembro') 
     const response= await apiIxachi.get('/permiso/lev/'+proy) 

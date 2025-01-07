@@ -29,7 +29,7 @@ const AutoComplete = ({nombre,label,data,optLabel,handleChange,isRequired=true,i
                         return true;
                     },
                  },*/
-                required: { value: isRequired, message: "Repite tu password" }
+                required: { value: isRequired, message: "Selecciona una opción" }
                // required: "Selecciona una opción"
             }}
             render={({ field: { onChange, value },fieldState }) => (
