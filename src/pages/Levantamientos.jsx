@@ -263,7 +263,7 @@ const Levantamientos = () => {
         }
         var estacaIni= data.estacaIm?`${data.estacai.estaca}+${data.estacaIm}`:data.estacai.estaca;
         var estacaFin= data.estacaFm?`${data.estacaf.estaca}+${data.estacaFm}`:data.estacaf?.estaca;
-        var newRow={tipoLinea:data.tipoLinea,linea:data.linea,estacaI:estacaIni,estacaF:estacaFin?? null,metros:mts,km:km,metros2:m2,ha:has,afectacion:data.afectacion,cultivo:data.afectacion.idCultivo,estacaInim:data.estacaIm,estacaFinm:data.estacaFm,estacaIni:data.estacai.estaca,estacaFin:data.estacaf.estaca??null}
+        var newRow={tipoLinea:data.tipoLinea,linea:data.linea,estacaI:estacaIni,estacaF:estacaFin?? null,metros:mts,km:km,metros2:m2,ha:has,afectacion:data.afectacion,cultivo:data.afectacion.idCultivo,estacaInim:data.estacaIm,estacaFinm:data.estacaFm,estacaIni:data.estacai.estaca,estacaFin:data.estacaf?.estaca??null}
         console.log({newRow})
         setFilas([...filas,newRow]);
         //reset()
@@ -301,7 +301,7 @@ const Levantamientos = () => {
             const resp= await addLevantamiento(data)
             console.log(resp)
             //TODO falta arreglar error cuando se manda el tipo de linea y falta agregar el idPersonal
-            //TODO falata funcion para quitar una fila de la tabla y que no se mande al backend 
+            //TODO verificar que al borrar una fila la estaca inicial no este en la tabla, es decir que sea mayor a la que esta en la tabla
         } catch (error) {
             console.error(error)
         }
@@ -673,7 +673,7 @@ const Levantamientos = () => {
                 </div>
                 {
                     filas &&  !!filas.length &&
-                    <TablaLevs data={filas}/>
+                    <TablaLevs data={filas} setFilas={setFilas} />
                 }
             </form>
         </FormProvider>
