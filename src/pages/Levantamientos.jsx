@@ -14,6 +14,7 @@ import { getCultivos } from "../services/catalogs.service";
 import useFetch from "../hooks/useFetch";
 import { privateRoutes } from "../utils/routes";
 import TablaLevs from "../components/TablaLevs";
+import { TextareaAutosize } from "@mui/material";
 
 
 const Levantamientos = () => {
@@ -38,7 +39,7 @@ const Levantamientos = () => {
     const [filas, setFilas] = useState([])
     const [isRequired, setIsrequired] = useState(true)
     const [distancia, setDistancia] = useState(0)
-    const [error,setError]=useState(null); 
+    const [error,setError]=useState(false); 
     const {API_URL} =privateRoutes
     //const { data:listas, loading, error } = useFetch(`${API_URL}proyecto/dept`);//*caragar los proyectos usando un custom-hook
    
@@ -46,7 +47,7 @@ const Levantamientos = () => {
     //const methods=useForm({ defaultValues: { name: "",email:"",edad:"" } });
     const methods=useForm();
     const methodss=useForm();
-    const {register, handleSubmit,formState: { errors,isDirty,isSubmitted,isValid},watch,reset,resetField,control,clearErrors,setValue} = methods;
+    const {handleSubmit,formState: { errors},watch,reset,resetField,control,clearErrors,setValue} = methods;
 
     const {handleSubmit:submitForm,control:control2} = methodss;
 
@@ -308,9 +309,6 @@ const Levantamientos = () => {
         //methods.handleSubmit(onSubmitParent)(data); 
     };
 
-    function checkAvailability(arr, val) {
-        return arr.some((arrVal) => val === arrVal.tipoLinea);
-    }
 
     function findLastTipoLinea(arr, val) {
         return arr.find((value) => value.tipoLinea === val);
@@ -334,7 +332,7 @@ const Levantamientos = () => {
                             rules={{
                                // required: "Selecciona un Proyecto"
                             }}
-                            render={({ field: { onChange, value },fieldState }) => (
+                            render={({ field: { onChange },fieldState }) => (
 
                                 <Autocomplete
                                 id="combo-box-proyecto"
@@ -381,7 +379,7 @@ const Levantamientos = () => {
                             rules={{
                                 required: "Selecciona un permiso"
                             }}
-                            render={({ field: { onChange, value },fieldState }) => (
+                            render={({ field: { onChange },fieldState }) => (
 
                                 <Autocomplete
                                 id="combo-box-permiso"
@@ -677,6 +675,29 @@ const Levantamientos = () => {
                 }
             </form>
         </FormProvider>
+        <div className="row">
+            <div className="col">
+                <Controller
+                    defaultValue=""
+                    name={"observaciones"}
+                    control={control2}
+                    rules={{
+                        maxLength:{value:100,message:'Solo se permiten 100 caracteres'},
+                        pattern:{value:/^[a-zA-ZÁ-ÿ0-9,.?!;:\s]+$/,message:"No se aceptan caracteres especiales"},
+                            
+                    }}
+                    render={({ field: { onChange, value },fieldState }) => (
+                        <TextField id="observaciones" label="Observaciones" variant="outlined"  onChange={onChange} value={value}  type="text"
+                        error={!!fieldState.error}
+                        helperText={fieldState.error?.message}
+                        multiline
+                        sx={{width:'100%'}} />
+                   
+                    )}
+                    />
+                   
+            </div>
+        </div>
         <div className="row">
             <div className="col">
                 {
