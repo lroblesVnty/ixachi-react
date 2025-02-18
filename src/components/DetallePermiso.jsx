@@ -81,10 +81,10 @@ const DetallePermiso = ({detalle,onSubmit}) => {
                     </div>
                     <div className="col" >
                         <div className="row align-items-center">
-                            <label htmlFor="inputPassword" className={`col-sm-12 col-lg-5 fw-bold ${styles.textColor}`} >Finiquito:</label>
+                            <label htmlFor="finiquito" className={`col-sm-12 col-lg-5 fw-bold ${styles.textColor}`} >Finiquito:</label>
                             <div className="col">
                             <Controller
-                                //defaultValue=""
+                                defaultValue=""
                                 name={"finiquito"}
                                 control={control2}
                                 rules={{

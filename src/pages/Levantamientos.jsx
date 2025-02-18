@@ -138,19 +138,34 @@ const Levantamientos = () => {
         }
     }
 
-    const loadEstacasFin=async(tipoLinea,linea,estaca)=>{
+    const loadEstacasFin=async(tipoLinea,linea,estaca,isRep)=>{//var isRep-> si hay filas con el mismo tipoLinea se mandan el resp a estacaFin , si no a estacaInicial
         console.log({estaca})
         console.log({linea})
         console.log({tipoLinea})
         try {
             const resp= await getEstacasFin(linea,tipoLinea,estaca)
             if (resp.status==200 && resp.data) {
-                resetField("estacaf") 
+               //* resetField("estacaf") 
                 //console.log(resp.data)
                 //const newData =resp.data.map(option => ({ id: option.nombreProyecto, label: option.nombreProyecto}))
                 if(tipoLinea=='R'){
-                    setEstacasFin(resp.data)  
+                    if (isRep) {
+                        resetField("estacai") 
+                        setEstacas(resp.data)
+                        var valSelected=Number(estaca)+1
+                        console.log(typeof(valSelected.toString()))
+                        setValue('estacai',{ estaca: valSelected})
+                        loadEstacasFin(tipoLinea,linea,valSelected,false)
+                       // document.getElementById('combo-box-estacai').dispatchEvent(new Event('change', { bubbles: true }));
+                       //TODO checar como hacer que se dispare el onchage metodo 
+                       //TODO verificar que la estacaini cargue desde el principio cuando haya un linea diferente aunque haya tipoLinea igualesmm
+                    }else{
+                        resetField("estacaf") 
+                        setEstacasFin(resp.data)  
+                        console.log('eventoNoRep')
+                    }
                 }else{
+                    resetField("estacai") 
                     setEstacas(resp.data)
                 }
             }
@@ -212,15 +227,19 @@ const Levantamientos = () => {
 
         if (filas.length>0) {
             //if (checkAvailability(filas,tipoLinea)) {
+            console.log('filas>0')
             if (findLastTipoLinea(filas,tipoLinea)) {
                 var lastLinea=findLastTipoLinea(filas,tipoLinea);
                 console.log({lastLinea})
-                const partes = lastLinea.estacaI.split("+");
-                var lastEstaca
-                lastEstaca=partes.length === 2?partes[0]:lastLinea.estacaI;
+                const partes = lastLinea.estacaF.toString().split("+");
+                var lastEstaca=partes.length === 2?partes[0]:lastLinea.estacaF;
                 console.log("lastEstaca +:",lastEstaca);
                 
-                loadEstacasFin(tipoLinea,linea,lastEstaca)
+                loadEstacasFin(tipoLinea,linea,lastEstaca,true)
+                
+            }else if(tipoLinea && linea){
+                console.log('no hay lieas iguales');
+                loadEstacasByLinea(tipoLinea,linea)
             }
         }else if(tipoLinea && linea){
             loadEstacasByLinea(tipoLinea,linea)
@@ -229,9 +248,11 @@ const Levantamientos = () => {
     }
 
     const onchangeEstacaIni=(estaca) => { 
+        console.log('se activó el onchange')
         //en loadEstacasFin borrar el valor del select antes de asignar valores a la lista de estacas
         if(tipoLinea=='R' && linea && estaca){
-            loadEstacasFin(tipoLinea,linea.linea,estaca?.estaca)
+            console.log('cargaEstacasFin')
+            loadEstacasFin(tipoLinea,linea.linea,estaca?.estaca,false)
         }
     }
 
@@ -264,7 +285,8 @@ const Levantamientos = () => {
         }
         var estacaIni= data.estacaIm?`${data.estacai.estaca}+${data.estacaIm}`:data.estacai.estaca;
         var estacaFin= data.estacaFm?`${data.estacaf.estaca}+${data.estacaFm}`:data.estacaf?.estaca;
-        var newRow={tipoLinea:data.tipoLinea,linea:data.linea,estacaI:estacaIni,estacaF:estacaFin?? null,metros:mts,km:km,metros2:m2,ha:has,afectacion:data.afectacion,cultivo:data.afectacion.idCultivo,estacaInim:data.estacaIm,estacaFinm:data.estacaFm,estacaIni:data.estacai.estaca,estacaFin:data.estacaf?.estaca??null}
+        console.log(data.estacaIm+'estacaaaa')
+        var newRow={tipoLinea:data.tipoLinea,linea:data.linea,estacaI:estacaIni,estacaF:estacaFin?? null,metros:mts,km:km,metros2:m2,ha:has,afectacion:data.afectacion,cultivo:data.afectacion.idCultivo,estacaInim:data.estacaIm||null,estacaFinm:data.estacaFm||null,estacaIni:data.estacai.estaca,estacaFin:data.estacaf?.estaca??null}
         console.log({newRow})
         setFilas([...filas,newRow]);
         //reset()
