@@ -1,4 +1,4 @@
-import { useState,useEffect } from "react";
+import { useState,useEffect,useRef } from "react";
 import { addLevantamiento, getDatosByPerm, getDistanciaByLinea, getEstacasBylinea, getEstacasFin, getPermisosByProyect } from "../services/permiso.service";
 import { useForm, FormProvider,Controller} from "react-hook-form"
 //import LoadingButton from '@mui/lab/LoadingButton';
@@ -40,7 +40,8 @@ const Levantamientos = () => {
     const [isRequired, setIsrequired] = useState(true)
     const [distancia, setDistancia] = useState(0)
     const [error,setError]=useState(false); 
-    const {API_URL} =privateRoutes
+    const {API_URL} =privateRoutes;
+    const datePickerRef = useRef(null);
     //const { data:listas, loading, error } = useFetch(`${API_URL}proyecto/dept`);//*caragar los proyectos usando un custom-hook
    
     //const {register, handleSubmit,formState: { errors},watch,reset,control} = useForm();
@@ -49,7 +50,7 @@ const Levantamientos = () => {
     const methodss=useForm();
     const {handleSubmit,formState: { errors},watch,reset,resetField,control,clearErrors,setValue} = methods;
 
-    const {handleSubmit:submitForm,control:control2} = methodss;
+    const {handleSubmit:submitForm,control:control2,isSubmitSuccessful,reset:resetForm1} = methodss;
 
     const loadPermisos=async (proyecto)=>{
         try {
@@ -68,6 +69,7 @@ const Levantamientos = () => {
         }
     }
     
+
     const loadProyectos=async ()=>{
         try {
             const resp= await getProjects()
@@ -157,7 +159,6 @@ const Levantamientos = () => {
                         setValue('estacai',{ estaca: valSelected})
                         loadEstacasFin(tipoLinea,linea,valSelected,false)
                        // document.getElementById('combo-box-estacai').dispatchEvent(new Event('change', { bubbles: true }));
-                       //TODO checar como hacer que se dispare el onchage metodo 
                        //TODO verificar que la estacaini cargue desde el principio cuando haya un linea diferente aunque haya tipoLinea igualesmm
                     }else{
                         resetField("estacaf") 
@@ -318,13 +319,48 @@ const Levantamientos = () => {
         data.detalleLev=filas
         data.finiquito= +data.finiquito
         data.idPersonal=57//TODO colocar el id del personal en sesion activo
-        data.observaciones=null//TODO colocar el valor del campo de observaciones
+        //data.observaciones=null//TODO colocar el valor del campo de observaciones
+        data.observaciones=data.observaciones
         console.log('Child Data:', data); 
         try {
             const resp= await addLevantamiento(data)
             console.log(resp)
             //TODO falta arreglar error cuando se manda el tipo de linea y falta agregar el idPersonal
             //TODO verificar que al borrar una fila la estaca inicial no este en la tabla, es decir que sea mayor a la que esta en la tabla
+            if (resp.status==201) {
+                Swal.fire({
+                    position: 'top',
+                    icon: 'success',
+                    title:'Añadido exitosamente',
+                    showConfirmButton: true,
+                    allowOutsideClick:false,
+                });
+                datePickerRef.current.resetDate();
+                resetForm1({
+                    idPermiso: "",
+                    fechaLev:"",
+                    finiquito:"",
+                    observaciones:""
+                });
+                setProyecto(null)
+                setPermiso(null)
+                resetField('proyecto');
+                setFilas([])
+               
+                console.log(isSubmitSuccessful)
+            }else if (resp.response) {
+                const codeError=resp.response.data.message.errorInfo[1]
+                console.log(codeError)
+                if (codeError==1062) {
+                    Swal.fire({
+                        position: 'top',
+                        icon: 'warning',
+                        title:'El producto ya existe',
+                        showConfirmButton: true,
+                        allowOutsideClick:false,
+                    });
+                }
+            }
         } catch (error) {
             console.error(error)
         }
@@ -347,7 +383,7 @@ const Levantamientos = () => {
         <FormProvider {...methodss}>
             <form onSubmit={submitForm(onSubmitChild)}>
                 <div className="row justify-content-center">
-                    <div className="col-lg-4">
+                    <div className="col-lg-4 col-sm-4">
                         <Controller
                             name="proyecto"
                             control={control}
@@ -361,6 +397,7 @@ const Levantamientos = () => {
                                 isOptionEqualToValue={(option, value) => option.nombreProyecto === value.nombreProyecto}
                                 size="small"
                                 options={proyectos}
+                                defaultValue=""
                                 //getOptionLabel={(option) =>  option.nombreProyecto ? option.nombreProyecto : ''}
                                 getOptionLabel={(option) => option.nombreProyecto}
                                 sx={{ width: '100%'}}
@@ -394,7 +431,7 @@ const Levantamientos = () => {
                             )}
                         /> 
                     </div>
-                    <div className="col-lg-6">
+                    <div className="col-lg-6 col-sm-6">
                         <Controller
                             name="idPermiso"
                             control={control2}
@@ -407,10 +444,11 @@ const Levantamientos = () => {
                                 id="combo-box-permiso"
                                 isOptionEqualToValue={(option, value) => option.IdPermiso === value.IdPermiso}
                                 size="small"
+                                defaultValue=""
                                 options={permisos}
                                 getOptionLabel={(option) => option.propietario+'/'+option.IdPermiso}
                                 sx={{ width: '100%'}}
-                                //value={permiso}
+                                value={permiso}
                                 onChange={(event, newValue) => {
                                     onChange(newValue?.IdPermiso);
                                     setPermiso(newValue);
@@ -437,7 +475,7 @@ const Levantamientos = () => {
                     </div>
                 </div>
                 
-                <DetallePermiso detalle={detallePerm} onsumit={onSubmitChild}/>
+                <DetallePermiso detalle={detallePerm} ref={datePickerRef}/>
             </form>
         </FormProvider>
 
@@ -745,6 +783,7 @@ const Levantamientos = () => {
                         }
                     ,}}
                     onClick={() => submitForm(onSubmitChild)()}
+                    //onClick={handleClick}
                 >
                 Enviar
                 </Button>

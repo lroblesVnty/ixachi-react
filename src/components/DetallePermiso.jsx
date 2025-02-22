@@ -6,11 +6,19 @@ import 'dayjs/locale/es';
 import dayjs from 'dayjs';
 import TextField from '@mui/material/TextField'
 import { useFormContext,Controller } from "react-hook-form"
-import { useState } from "react";
+import { useState,useImperativeHandle,forwardRef } from "react";
 
-const DetallePermiso = ({detalle,onSubmit}) => {
+//const DetallePermiso = ({detalle,ref}) => {
+const DetallePermiso = forwardRef(({detalle}, ref) => {
     const { control2} = useFormContext()
     const [selectedDate, setSelectedDate] = useState(null);
+
+
+    useImperativeHandle(ref, () => {
+        return {
+            resetDate: () => setSelectedDate(null)
+        };
+    }, []);
    
       
     return (
@@ -93,7 +101,8 @@ const DetallePermiso = ({detalle,onSubmit}) => {
                                     maxLength:{value:120,message:'Solo se permiten 120 caracteres'},
                                 }}
                                 render={({ field: { onChange, value },fieldState }) => (
-                                <TextField id="finiquito" label="Finiquito" variant="outlined"  onChange={onChange} value={value}  type="text"
+                                <TextField id="finiquito" label="Finiquito" variant="outlined"  onChange={onChange} value={value}       
+                                    type="text"
                                     error={!!fieldState.error}
                                     helperText={fieldState.error?.message}
                                     size="small"
@@ -106,5 +115,6 @@ const DetallePermiso = ({detalle,onSubmit}) => {
                 </div>
         </>
     )
-}
+//}
+});
 export default DetallePermiso
