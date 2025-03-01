@@ -50,7 +50,11 @@ const Levantamientos = () => {
     const methodss=useForm();
     const {handleSubmit,formState: { errors},watch,reset,resetField,control,clearErrors,setValue} = methods;
 
-    const {handleSubmit:submitForm,control:control2,isSubmitSuccessful,reset:resetForm1} = methodss;
+    const {handleSubmit:submitForm,control:control2,formState:{isSubmitSuccessful,isSubmitted,errors:errFp},reset:resetForm1,register} = methodss;
+
+    useEffect(() => {
+        resetForm1()
+    }, [isSubmitSuccessful])
 
     const loadPermisos=async (proyecto)=>{
         try {
@@ -159,7 +163,6 @@ const Levantamientos = () => {
                         setValue('estacai',{ estaca: valSelected})
                         loadEstacasFin(tipoLinea,linea,valSelected,false)
                        // document.getElementById('combo-box-estacai').dispatchEvent(new Event('change', { bubbles: true }));
-                       //TODO verificar que la estacaini cargue desde el principio cuando haya un linea diferente aunque haya tipoLinea igualesmm
                     }else{
                         resetField("estacaf") 
                         setEstacasFin(resp.data)  
@@ -305,8 +308,6 @@ const Levantamientos = () => {
         setValue('fechaLev', data.fechaLev);
         setValue('finiquito', data.finiquito);
         clearErrors()
-        //TODO si ya existe una linea de algun tipo, la estaca inicial debe ser la ultima que se agregó en la tabla
-        //TODO cuando se agrega otra linea a la tabla, los primeros campos no los detecta aunque tengan dato
 
     }
 
@@ -319,14 +320,13 @@ const Levantamientos = () => {
         data.detalleLev=filas
         data.finiquito= +data.finiquito
         data.idPersonal=57//TODO colocar el id del personal en sesion activo
-        //data.observaciones=null//TODO colocar el valor del campo de observaciones
         data.observaciones=data.observaciones
+        data.foto=data.foto[0]
         console.log('Child Data:', data); 
         try {
             const resp= await addLevantamiento(data)
             console.log(resp)
-            //TODO falta arreglar error cuando se manda el tipo de linea y falta agregar el idPersonal
-            //TODO verificar que al borrar una fila la estaca inicial no este en la tabla, es decir que sea mayor a la que esta en la tabla
+            console.log(isSubmitSuccessful)
             if (resp.status==201) {
                 Swal.fire({
                     position: 'top',
@@ -335,34 +335,37 @@ const Levantamientos = () => {
                     showConfirmButton: true,
                     allowOutsideClick:false,
                 });
-                datePickerRef.current.resetDate();
+               
                 resetForm1({
                     idPermiso: "",
                     fechaLev:"",
                     finiquito:"",
-                    observaciones:""
+                    observaciones:"",
+                    foto:""
                 });
+                datePickerRef.current.resetDate();
                 setProyecto(null)
                 setPermiso(null)
                 resetField('proyecto');
                 setFilas([])
-               
-                console.log(isSubmitSuccessful)
-            }else if (resp.response) {
-                const codeError=resp.response.data.message.errorInfo[1]
-                console.log(codeError)
-                if (codeError==1062) {
+                reset()
+                setDetallePem(null)
+               //TODO CREAR EL INPUT FILE Y MANDAR AL BACKEND
+            }
+        } catch (error) {
+            console.error(error)
+            console.error(error.response)
+            if (error.response) {
+                if (error.status==422) {
                     Swal.fire({
                         position: 'top',
-                        icon: 'warning',
-                        title:'El producto ya existe',
+                        icon: 'error',
+                        title:'Hubo un error',
                         showConfirmButton: true,
                         allowOutsideClick:false,
                     });
                 }
             }
-        } catch (error) {
-            console.error(error)
         }
         //methods.handleSubmit(onSubmitParent)(data); 
     };
@@ -735,7 +738,32 @@ const Levantamientos = () => {
                 }
             </form>
         </FormProvider>
-        <div className="row">
+        <div className="row justify-content-center" id="rowDocs">
+            <div className="col-lg-5">
+                <div className="mb-3">
+                    <label htmlFor="formFile" className="form-label">Cargar fotografías</label>
+                    <input className={"form-control "+(isSubmitted?errFp.foto?'is-invalid':'is-valid':'')} type="file"  name="foto" id="foto" accept=".jpg,.jpeg.png"
+                        {...register("foto",{
+                            required: 'Debe seleccionar un archivo',
+                            validate: {
+                            checkFileType: (value) =>
+                                value[0] && (value[0].type === 'image/png' || value[0].type === 'image/jpeg' || value[0].type === 'image/jpg') || 'Solo se permiten archivos PNG,JPEG o JPG',
+                            checkFileSize: (value) =>
+                                value[0] && value[0].size <= 3000000 || 'El tamaño del archivo no debe exceder 3MB',
+                            },
+                        })}
+
+                    
+                    /> 
+                    <div className="invalid-feedback">
+                        {errFp.foto && errFp.foto.message}
+                    </div>
+                </div>
+                
+            
+            </div>
+        </div>
+        <div className="row mt-4">
             <div className="col">
                 <Controller
                     defaultValue=""
@@ -766,7 +794,6 @@ const Levantamientos = () => {
                     <Alert variant="outlined" severity="error">
                         {error}
                     </Alert>       
-                    //TODO agregar sweetAlert   
                 }
             </div>
         </div>

@@ -11,7 +11,12 @@ export const  addMember=async (data)=>{
 }
 
 export const  addLevantamiento=async (data)=>{
-    const response= await apiIxachi.post('/levantamientos',data) 
+    const options=  {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+    }
+    const response= await apiIxachi.post('/levantamientos',data,options) 
     return response
 }
 
