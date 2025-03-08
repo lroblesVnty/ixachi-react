@@ -7,6 +7,7 @@ import Home from './pages/Home'
 import { Routes, Route} from "react-router-dom";
 import Dashboard from './pages/Dashboard'
 import Permisos from './pages/Permisos'
+import AltaLevantamientos from './pages/AltaLevantamientos'
 import Levantamientos from './pages/Levantamientos'
 
 function App() {
@@ -17,7 +18,8 @@ function App() {
 				 <Route path="/home" element={<Home/>} />
 				 <Route path="/dashboard" element={<Dashboard/>} />
 				 <Route path="/permisos" element={<Permisos/>} />
-				 <Route path="/levantamiento" element={<Levantamientos/>} />
+				 <Route path="/add/levantamiento" element={<AltaLevantamientos/>} />
+				 <Route path="/levantamientos" element={<Levantamientos/>} />
 					{/* <Route>
 						<Route path="/home" element={<Home/>} />
 					</Route>

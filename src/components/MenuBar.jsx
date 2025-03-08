@@ -44,7 +44,7 @@ const menuItem=[
     icon:<BorderColorIcon/>
   },
   {
-    path:"/levantamiento",
+    path:"add/levantamiento",
     name:"Levantamientos",
     icon:<Dangerous/>
   }
@@ -198,7 +198,7 @@ function MenuBar({children}) {
                         </ListItemIcon>
                         <ListItemText primary={name} sx={{ opacity: open ? 1 : 0 }} />
                     </ListItemButton>
-                    </NavLink>;
+                    </NavLink>
                   </ListItem>
                 ))}
             </List>
@@ -243,4 +243,4 @@ function MenuBar({children}) {
         </>
     )
 } */
-export default MenuBar;
+export default MenuBar
