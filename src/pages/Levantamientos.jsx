@@ -6,6 +6,7 @@ import { getLevantamientos } from '../services/levantamientos.service';
 const Levantamientos = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [rows, setRows] = useState([]);
+    const [rowCount, setRowCount] = useState(0);
 
 
      useEffect(() => {
@@ -21,6 +22,7 @@ const Levantamientos = () => {
             const resp= await getLevantamientos()
 
             setRows(resp.data)
+            setRowCount(resp.data.length)
             /*if (resp.status==200 && resp.data) {//comenté el bloque porque se supone que siempre debe de dar 200 o success
                 setLinea(null)
                 console.log(resp.data)
@@ -38,7 +40,7 @@ const Levantamientos = () => {
     return (
         <>
             <div>Levantamientos</div>
-            <DataTable rows={rows} loading={isLoading}/>
+            <DataTable rows={rows} loading={isLoading} rowCount={rowCount}/>
         </>
     )
 }

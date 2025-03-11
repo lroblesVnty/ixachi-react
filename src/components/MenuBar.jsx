@@ -175,6 +175,10 @@ function MenuBar({children}) {
                         className={({ isActive, isPending }) =>
                           isPending ? "pending" : isActive ? "active" : ""
                         }
+                        style={({ isActive }) => ({
+                            color: isActive ? 'blue' : 'gray',
+                            textDecoration: 'none',
+                        })}
                       >
                     <ListItemButton
                         sx={{
@@ -228,7 +232,7 @@ function MenuBar({children}) {
             ))}
             </List>
         </Drawer>
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }} >
+        <Box component="main" sx={{ flexGrow: 1, p: 3,overflow: 'auto'}} >
             <DrawerHeader />
             {children}
         </Box>

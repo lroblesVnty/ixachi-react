@@ -1,7 +1,7 @@
 const gridStyles={
     "& .theme-header": {
-        //backgroundColor: 'rgb(226, 227, 229)',
-        color: "#02b99b",
+        backgroundColor: 'rgb(28, 102, 178)',
+        color: "white",
     },
     "& .MuiDataGrid-toolbarContainer": {
         //: '#074682',
@@ -27,7 +27,7 @@ const gridStyles={
         },
     },
     border: 2,
-    borderColor: "#02b99b",
+    borderColor: "rgb(28, 102, 178)",
     "& .MuiDataGrid-row:hover": {
         color: "primary.main",
         backgroundColor: "rgba(147, 203, 248, 0.11)",

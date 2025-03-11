@@ -6,23 +6,24 @@ import EditIcon from '@mui/icons-material/Edit';
 import {useCallback} from 'react';
 import gridStyles from './DataGridStyles';
 import CustomPagination from './CustomPagination';
-import { CustomFooter } from './CustomFooter';
+import CustomFooter from './CustomFooter';
 import customLocaleText from '../../constants/localeText';
 
 
-const DataTable = ({rows,loading}) => {
+const DataTable = ({rows,loading,rowCount}) => {
     const [pageSize, setPageSize] = useState(5);
     //const [loading, setLoading] = useState(false);
-    const [rowCount, setRowCount] = useState(10);
+    //const [rowCount, setRowCount] = useState(10);
 
     const columns= [
-        { field: 'IdLevantamiento', headerName: 'Id', flex: 1,maxWidth:50,headerClassName: 'theme-header'},
-        { field: 'nombre', headerName: 'Nombre Miembro',flex: 1,headerClassName: 'theme-header',
-        headerAlign: 'center',align:'center' },
+        { field: 'IdLevantamiento', headerName: 'Id Lev', flex: 1,maxWidth:60,headerClassName: 'theme-header'},
+        { field: 'propietario', headerName: 'Propietario',width:240,headerClassName: 'theme-header',
+        headerAlign: 'center',align:'center',valueGetter: (value,row) => row.permiso.predio.propietario.nombre },
         { field: 'fechaLevantamiento', headerName: 'Fecha de Levantamiento',flex: 1,headerClassName: 'theme-header',headerAlign: 'center',align:'center'},
-        { field: 'IdPermiso', headerName: 'N°.Permiso',flex: 1,description:
-        'The identification used by the person with access to the online service.',headerClassName: 'theme-header',
-        headerAlign: 'center',align:'center',  valueGetter: (value,row) => row.permiso.IdPermiso,},
+        { field: 'IdPermiso', headerName: 'N°.Permiso',description:
+        'Permiso del Lev.',headerClassName: 'theme-header',headerAlign: 'center',align:'center',  valueGetter: (value,row) => row.permiso.IdPermiso,width:100,maxWidth:150},
+        { field: 'Proyecto', headerName: 'Proyecto',flex: 1,headerClassName: 'theme-header',headerAlign: 'center',align:'center',valueGetter: (value,row) => row.permiso.predio.idProyecto,maxWidth:220},
+        { field: 'statusPago', headerName: 'Estatus Pago',flex: 1,headerClassName: 'theme-header',headerAlign: 'center',align:'center'},
         //TODO agregar las columnas restantes
         {   
             maxWidth:50,
@@ -45,8 +46,8 @@ const DataTable = ({rows,loading}) => {
    
 
     return (
-        <div className="row justify-content-center">
-            <div style={{ width: '100%', maxWidth: '950px', overflowX: 'auto' }}>
+        <div style={{ width: '100%' }}>
+            <div style={{  height: 450,width: '100%', overflowX: 'auto' }}>
                 <DataGrid
                     //autoHeight
                     //localeText={esES.components.MuiDataGrid.defaultProps.localeText}
@@ -66,6 +67,7 @@ const DataTable = ({rows,loading}) => {
                     disableColumnSelector
                     disableDensitySelector
                     disableSelectionOnClick
+                    disableRowSelectionOnClick
                     pagination
                     initialState={{
                         pagination: {
@@ -78,6 +80,7 @@ const DataTable = ({rows,loading}) => {
                     }}
                     slotProps={{
                         footer: { rowCount },
+                        // footer: { total: rows.length }//*si se requiere cambiar el nombre de la variable en CustomFooter
                         pagination: {
                             labelRowsPerPage: 'Filas por página',
                             // labelDisplayedRows: ({ from, to, count }) =>
@@ -86,7 +89,9 @@ const DataTable = ({rows,loading}) => {
                     }}
             
                     experimentalFeatures={{ newEditingApi: true }}
-                // onRowClick={(rowData) => verDetalle(rowData.row)}
+                    onRowClick={({row}) =>{
+                        console.log(row)
+                    } }
             
             
                 />
