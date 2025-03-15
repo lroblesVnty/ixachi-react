@@ -9,14 +9,14 @@ const Levantamientos = () => {
     const [rowCount, setRowCount] = useState(0);
 
 
-     useEffect(() => {
+    useEffect(() => {
         (async()=>{
             loadLevantamientos()
         })();
        
     },[]);//arreglo vacio para que no itere varias veces
 
-    const loadLevantamientos=async(proy,tipo)=>{
+    const loadLevantamientos=async()=>{
         try {
             setIsLoading(true)            
             const resp= await getLevantamientos()
@@ -37,10 +37,15 @@ const Levantamientos = () => {
         }
     }
 
+    const showDetalle = ({row}) => {
+         console.log(row)
+         window.open('/levantamientos/'+row.IdLevantamiento,'_blank')
+    }
+
     return (
         <>
-            <div>Levantamientos</div>
-            <DataTable rows={rows} loading={isLoading} rowCount={rowCount}/>
+            <div className='h3 mb-3'>Levantamientos</div>
+            <DataTable rows={rows} loading={isLoading} rowCount={rowCount} onRowClick={showDetalle}/>
         </>
     )
 }

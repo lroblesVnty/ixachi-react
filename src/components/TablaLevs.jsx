@@ -11,7 +11,7 @@ const TablaLevs = ({data,setFilas}) => {
     };
 
     return (
-        <div className="table-responsive">
+        <div className={"table-responsive "+styles.table }>
             <table className="table table-sm  table-bordered" id="tablaDetalles">
                 <thead >
                     <tr>

@@ -10,7 +10,7 @@ import CustomFooter from './CustomFooter';
 import customLocaleText from '../../constants/localeText';
 
 
-const DataTable = ({rows,loading,rowCount}) => {
+const DataTable = ({rows,loading,rowCount,onRowClick}) => {
     const [pageSize, setPageSize] = useState(5);
     //const [loading, setLoading] = useState(false);
     //const [rowCount, setRowCount] = useState(10);
@@ -87,11 +87,12 @@ const DataTable = ({rows,loading,rowCount}) => {
                             //     `${from} - ${to} de ${count === -1 ? `more than ${to}` : count}`,
                         },
                     }}
-            
-                    experimentalFeatures={{ newEditingApi: true }}
+                    onRowClick={onRowClick}
+                   /*experimentalFeatures={{ newEditingApi: true }}
                     onRowClick={({row}) =>{
                         console.log(row)
-                    } }
+                    } }*/
+                
             
             
                 />

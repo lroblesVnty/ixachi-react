@@ -9,3 +9,8 @@ export const  getLevantamientos=async ()=>{
     const response= await apiIxachi.get('/levantamientos') 
     return response
 }
+
+export const  getLevantamiento=async (id)=>{
+    const response= await apiIxachi.get('/levantamientos/'+id) 
+    return response
+}

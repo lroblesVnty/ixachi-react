@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard'
 import Permisos from './pages/Permisos'
 import AltaLevantamientos from './pages/AltaLevantamientos'
 import Levantamientos from './pages/Levantamientos'
+import DetalleLevantamiento from './pages/DetalleLevantamiento'
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
 				 <Route path="/permisos" element={<Permisos/>} />
 				 <Route path="/add/levantamiento" element={<AltaLevantamientos/>} />
 				 <Route path="/levantamientos" element={<Levantamientos/>} />
+				 <Route path="/levantamientos/:idLev" element={<DetalleLevantamiento/>} />
 					{/* <Route>
 						<Route path="/home" element={<Home/>} />
 					</Route>

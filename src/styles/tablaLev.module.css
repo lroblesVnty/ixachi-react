@@ -1,11 +1,12 @@
-thead{
+
+.table thead{
     background-color: rgb(28, 102, 178);
 	
 	
 	color: rgb(252, 252, 252);
 }
 
-tr:hover td{
+.table tr:hover td{
 
     background-color:rgb(255, 165, 0);
 	color: rgb(252, 252, 252);
