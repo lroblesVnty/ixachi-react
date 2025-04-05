@@ -6,9 +6,13 @@ import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import Paper from '@mui/material/Paper';
-import { getDetalleLevantamiento, getLevantamiento } from '../services/levantamientos.service';
+import { getDetalleEstacadoById, getDetalleLevantamiento, getLevantamiento } from '../services/levantamientos.service';
 import { useState,useEffect } from 'react';
+import dayjs from 'dayjs';
 
 const DetalleLevantamiento = () => {
 
@@ -93,14 +97,36 @@ const DetalleLevantamiento = () => {
     }
 
     const FormatearEnPesos = (cantidad ) => {
-        console.log(cantidad)
         const formatoPesos = cantidad.toLocaleString('es-MX', {
           style: 'currency',
           currency: 'MXN',
         });
       
         return formatoPesos;
-      };
+    };
+
+    const exportEstacado= async()=>{
+        try {         
+            const response= await getDetalleEstacadoById(idLev)
+            console.log(response.data)
+            console.log(response.headers);
+
+            const url = window.URL.createObjectURL(response.data);
+            const link = document.createElement('a');
+            link.href = url;
+            var nameFile='levs'+dayjs().format('DD-MM-YYYY')+'.xlsx';
+            link.setAttribute('download', nameFile); // Nombre del archivo
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        
+        
+            
+        } catch (error) {
+            console.log(error)
+        }
+
+    }
 
 
   return (
@@ -158,6 +184,13 @@ const DetalleLevantamiento = () => {
         <div className="row text-center mt-4">
             <div className="col fs-3">
                 Estacado
+            </div>
+            <div className="col-2">
+                <Tooltip title="Exportar Estacado" placement="top-start">
+                    <IconButton color="success" onClick={exportEstacado}>
+                        <FileDownloadIcon />
+                    </IconButton>
+                </Tooltip>
             </div>
         </div>
         <div className="row justify-content-center mt-4">

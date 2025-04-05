@@ -44,7 +44,7 @@ const Levantamientos = () => {
 
     return (
         <>
-            <div className='h3 mb-3'>Levantamientos</div>
+            <div className='h3 mb-3 text-center'>Levantamientos</div>
             <DataTable rows={rows} loading={isLoading} rowCount={rowCount} onRowClick={showDetalle}/>
         </>
     )
