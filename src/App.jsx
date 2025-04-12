@@ -10,6 +10,7 @@ import Permisos from './pages/Permisos'
 import AltaLevantamientos from './pages/AltaLevantamientos'
 import Levantamientos from './pages/Levantamientos'
 import DetalleLevantamiento from './pages/DetalleLevantamiento'
+import ValidacionSAT from './pages/ValidacionSAT'
 
 function App() {
 
@@ -22,6 +23,7 @@ function App() {
 				 <Route path="/add/levantamiento" element={<AltaLevantamientos/>} />
 				 <Route path="/levantamientos" element={<Levantamientos/>} />
 				 <Route path="/levantamientos/:idLev" element={<DetalleLevantamiento/>} />
+				 <Route path="/contabilidad" element={<ValidacionSAT/>} />
 					{/* <Route>
 						<Route path="/home" element={<Home/>} />
 					</Route>

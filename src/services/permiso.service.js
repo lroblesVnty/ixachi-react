@@ -45,3 +45,9 @@ export const  getDistanciaByLinea=async (linea)=>{
     const response= await apiIxachi.get('/linea/distancia/'+linea) 
     return response
 }
+
+export const  getExpCompletos=async (linea)=>{
+    const response= await apiIxachi.get('/propietario/exp-completo') 
+    return response
+}
+
