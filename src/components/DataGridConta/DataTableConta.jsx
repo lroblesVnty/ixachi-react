@@ -1,16 +1,29 @@
 import {DataGrid,GridActionsCellItem} from '@mui/x-data-grid';
-import  { useState,useEffect } from "react";
+import  { useState,useCallback } from "react";
 import EditIcon from '@mui/icons-material/Edit';
 import gridStyles from '../DataGrid/DataGridStyles';
 import CustomPagination from '../DataGrid/CustomPagination';
 import CustomFooter from '../DataGrid/CustomFooter';
 import customLocaleText from '../../constants/localeText';
+import { Tooltip } from '@mui/material';
+import { showAlertUpdate } from '../../services/uilities.service';
 
 
 const DataTableConta = ({rows,loading,rowCount,onRowClick}) => {
     const [pageSize, setPageSize] = useState(5);
     //const [loading, setLoading] = useState(false);
     //const [rowCount, setRowCount] = useState(10);
+
+    const updateEstatus = useCallback(
+        (row) => () => {
+            console.log(row)
+            document.activeElement.blur();
+            showAlertUpdate(row)
+            //navigate("/editar/"+id);
+            //window.open('#/products/edit/'+id,'_blank')
+        },
+        [],
+    );
 
     const columns= [
         { field: 'idContabilidadEstatus', headerName: 'Id', flex: 1,maxWidth:60,headerClassName: 'theme-header'},
@@ -38,14 +51,19 @@ const DataTableConta = ({rows,loading,rowCount,onRowClick}) => {
             align:'right',
             getActions: (params) => [
                 <GridActionsCellItem
-                    icon={<EditIcon fontSize="small" />}
+                    icon={
+                        <Tooltip title="Actualizar Estatus"><EditIcon fontSize="small" /></Tooltip>
+                    }
                     label="Editar"
-                    // onClick={edit(params.row)}
+                    onClick={updateEstatus(params.row)}
                 />,
              
             ],
         },
     ];
+
+    
+    
 
    
 
@@ -91,7 +109,7 @@ const DataTableConta = ({rows,loading,rowCount,onRowClick}) => {
                             //     `${from} - ${to} de ${count === -1 ? `more than ${to}` : count}`,
                         },
                     }}
-                    onRowClick={onRowClick}
+                    //onRowClick={onRowClick}
                    /*experimentalFeatures={{ newEditingApi: true }}
                     onRowClick={({row}) =>{
                         console.log(row)
