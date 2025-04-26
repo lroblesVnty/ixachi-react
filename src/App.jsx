@@ -11,6 +11,7 @@ import AltaLevantamientos from './pages/AltaLevantamientos'
 import Levantamientos from './pages/Levantamientos'
 import DetalleLevantamiento from './pages/DetalleLevantamiento'
 import ValidacionSAT from './pages/ValidacionSAT'
+import Login from './pages/Login'
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
 				 <Route path="/levantamientos" element={<Levantamientos/>} />
 				 <Route path="/levantamientos/:idLev" element={<DetalleLevantamiento/>} />
 				 <Route path="/contabilidad" element={<ValidacionSAT/>} />
+				 <Route path="/login" element={<Login/>} />
 					{/* <Route>
 						<Route path="/home" element={<Home/>} />
 					</Route>
