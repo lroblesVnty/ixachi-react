@@ -5,7 +5,16 @@ const apiIxachi = axios.create({
 });
 
 
-export const  getUserFromDb=async ()=>{
-    const response= await apiIxachi.post('/login') 
+export const  getUserFromDb=async (credentials)=>{
+    const response= await apiIxachi.post('/login',credentials) 
+    return response
+}
+
+export const  getUserActive=async (token)=>{
+    const response= await apiIxachi.get('/user', { 
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+    }) 
     return response
 }

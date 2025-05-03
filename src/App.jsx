@@ -12,20 +12,31 @@ import Levantamientos from './pages/Levantamientos'
 import DetalleLevantamiento from './pages/DetalleLevantamiento'
 import ValidacionSAT from './pages/ValidacionSAT'
 import Login from './pages/Login'
+import ProtectedRoute from './components/ProtectedRoutes'
 
 function App() {
 
   	return (
 		<MenuBar> 
 			<Routes>
-				 <Route path="/home" element={<Home/>} />
-				 <Route path="/dashboard" element={<Dashboard/>} />
-				 <Route path="/permisos" element={<Permisos/>} />
-				 <Route path="/add/levantamiento" element={<AltaLevantamientos/>} />
-				 <Route path="/levantamientos" element={<Levantamientos/>} />
-				 <Route path="/levantamientos/:idLev" element={<DetalleLevantamiento/>} />
-				 <Route path="/contabilidad" element={<ValidacionSAT/>} />
-				 <Route path="/login" element={<Login/>} />
+				<Route path="/home" element={<Home/>} />
+				<Route exact path="/" element={
+                    <ProtectedRoute>
+                        <Dashboard/> 
+                    </ProtectedRoute>
+                    
+                } />
+				<Route path="/add/levantamiento" element={
+                    <ProtectedRoute redirectTo="/">
+                        <AltaLevantamientos/>
+                    </ProtectedRoute>
+                    
+                } />
+				<Route path="/permisos" element={<Permisos/>} />
+				<Route path="/levantamientos" element={<Levantamientos/>} />
+				<Route path="/levantamientos/:idLev" element={<DetalleLevantamiento/>} />
+				<Route path="/contabilidad" element={<ValidacionSAT/>} />
+				<Route path="/login" element={<Login/>} />
 					{/* <Route>
 						<Route path="/home" element={<Home/>} />
 					</Route>

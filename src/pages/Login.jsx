@@ -8,17 +8,27 @@ import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { useState } from "react";
+import { useState,useContext } from "react";
 import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
 import { FormHelperText } from "@mui/material";
+import { useSession } from "../Providers/SessionProvider";
+import { AuthContext } from "../Auth/AuthContext";
+import { useNavigate } from 'react-router-dom';
 //import LoadingButton from '@mui/lab/LoadingButton';
-import { signIn } from "../Auth/Auth"
+//import { signIn } from "../Auth/Auth"
 
 const Login = () => {
     const {register, handleSubmit,formState: { errors},watch,reset,control} = useForm();
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    //const { signIn } = useSession();
+    const {login} = useContext(AuthContext);
+    
+     const navigate = useNavigate();
+
+
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
     const handleMouseDownPassword = (event) => {
@@ -31,19 +41,14 @@ const Login = () => {
     const onSubmit = async (data) =>{
         console.log({data})
 
-        const result = await signIn('credentials', { // 'credentials' coincide con el 'name' de tu CredentialsProvider
-            redirect: false, // Evita la redirección automática
-            email,
-            password,
-        });
-      
-        if (result?.error) {
-           // setError(result.error);
-           console.log(result.error)
+        const result = await login(data);
+        //console.log(result)
+
+        if (result.success) {
+            navigate('/');
+            console.log('dentro todo ok')
         } else {
-        // Inicio de sesión exitoso, puedes redirigir al usuario o actualizar el estado
-        console.log('Inicio de sesión exitoso!');
-        // Router.push('/dashboard'); // Ejemplo de redirección en Next.js
+            setError(result.error);
         }
     }
 
