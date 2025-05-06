@@ -13,44 +13,66 @@ import DetalleLevantamiento from './pages/DetalleLevantamiento'
 import ValidacionSAT from './pages/ValidacionSAT'
 import Login from './pages/Login'
 import ProtectedRoute from './components/ProtectedRoutes'
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { CssBaseline, Button } from "@mui/material";
+
 
 function App() {
 
+	const theme = createTheme({
+		palette: {
+			primary: {
+				main: "rgb(28, 102, 178)", // Azul
+			},
+			secondary: {
+				main: "rgb(255,255,255)", // Rojo
+			},
+			customColors: {
+				success: "#4caf50", // Verde
+				warning: "#ff9800", // Naranja
+				danger: "#f44336", // Rojo intenso
+			},
+		},
+	});	
+
   	return (
-		<MenuBar> 
-			<Routes>
-				<Route path="/home" element={<Home/>} />
-				<Route exact path="/" element={
-                    <ProtectedRoute>
-                        <Dashboard/> 
-                    </ProtectedRoute>
-                    
-                } />
-				<Route path="/add/levantamiento" element={
-                    <ProtectedRoute redirectTo="/">
-                        <AltaLevantamientos/>
-                    </ProtectedRoute>
-                    
-                } />
-				<Route path="/permisos" element={<Permisos/>} />
-				<Route path="/levantamientos" element={<Levantamientos/>} />
-				<Route path="/levantamientos/:idLev" element={<DetalleLevantamiento/>} />
-				<Route path="/contabilidad" element={<ValidacionSAT/>} />
-				<Route path="/login" element={<Login/>} />
-					{/* <Route>
-						<Route path="/home" element={<Home/>} />
-					</Route>
-					<Route>
-						<Route path="/dashboard" element={<Dashboard/>} />
-					</Route>
-					<Route>
-						<Route path="/permisos" element={<Permisos/>} />
-					</Route>
-					<Route>
-						<Route path="/levantamiento" element={<Levantamientos/>} />
-					</Route> */}
-			</Routes>
-		</MenuBar>
+		<ThemeProvider theme={theme}>
+
+			<MenuBar> 
+				<Routes>
+					<Route path="/home" element={<Home/>} />
+					<Route exact path="/" element={
+						<ProtectedRoute>
+							<Dashboard/> 
+						</ProtectedRoute>
+						
+					} />
+					<Route path="/add/levantamiento" element={
+						<ProtectedRoute redirectTo="/">
+							<AltaLevantamientos/>
+						</ProtectedRoute>
+						
+					} />
+					<Route path="/permisos" element={<Permisos/>} />
+					<Route path="/levantamientos" element={<Levantamientos/>} />
+					<Route path="/levantamientos/:idLev" element={<DetalleLevantamiento/>} />
+					<Route path="/contabilidad" element={<ValidacionSAT/>} />
+					<Route path="/login" element={<Login/>} />
+						{/* <Route>
+							<Route path="/home" element={<Home/>} />
+						</Route>
+						<Route>
+							<Route path="/dashboard" element={<Dashboard/>} />
+						</Route>
+						<Route>
+							<Route path="/permisos" element={<Permisos/>} />
+						</Route>
+						<Route>
+							<Route path="/levantamiento" element={<Levantamientos/>} />
+						</Route> */}
+				</Routes>
+			</MenuBar>
+		</ThemeProvider>
    		
   );
 }

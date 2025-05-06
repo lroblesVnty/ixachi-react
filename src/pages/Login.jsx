@@ -12,6 +12,7 @@ import { useState,useContext } from "react";
 import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
 import { FormHelperText } from "@mui/material";
+import Alert from '@mui/material/Alert';
 import { useSession } from "../Providers/SessionProvider";
 import { AuthContext } from "../Auth/AuthContext";
 import { useNavigate } from 'react-router-dom';
@@ -42,7 +43,7 @@ const Login = () => {
         console.log({data})
 
         const result = await login(data);
-        //console.log(result)
+        console.log(result)
 
         if (result.success) {
             navigate('/');
@@ -131,6 +132,23 @@ const Login = () => {
                         >
                             Iniciar Sesión
                         </Button>
+                    </div>
+                </div>
+                <div className="row justify-content-center mt-4">
+                    <div className="col-4">
+                        {
+                            error &&
+                            <Alert severity="error"  
+                                sx={{ 
+                                    display: "flex", 
+                                    justifyContent: "center", 
+                                    alignItems: "center", 
+                                    textAlign: "center"
+                                }}
+                            >
+                                {error}
+                            </Alert>
+                        }
                     </div>
                 </div>
             </form>

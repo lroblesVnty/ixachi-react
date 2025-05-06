@@ -17,13 +17,18 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
-import { useState } from "react";
+import { useState,useContext } from "react";
 import HomeIcon from '@mui/icons-material/Home';
 import { NavLink, useLocation } from "react-router-dom";
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import { Dangerous } from "@mui/icons-material";
+import LogoutIcon from '@mui/icons-material/Logout';
+import { AuthContext } from "../Auth/AuthContext";
+import { useNavigate } from 'react-router-dom';
+
+
 
 const drawerWidth = 240;
 
@@ -115,23 +120,40 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
+
 function MenuBar({children}) {
     const theme = useTheme();
     const [open, setOpen] = useState(false);
     const location=useLocation();
+    const {logout} = useContext(AuthContext);
+    const navigate = useNavigate();
 
     const handleDrawerOpen = () => {
-        setOpen(true);
+      setOpen(true);
     };
 
     const handleDrawerClose = () => {
-        setOpen(false);
+      setOpen(false);
     };
 
     const handleListItemClick = (event,name) => {
         
-        console.log({name})
-      };
+      console.log({name})
+    };
+
+    const handleLogout = async () => {
+     
+      const result = await logout();
+      //console.log({result})
+      if (result?.success === false) {
+        console.error('Error al cerrar sesión:', result?.error);
+        // Aquí podrías mostrar un mensaje de error al usuario
+      } else {
+        // Redirigir al usuario a la página de inicio de sesión o a donde sea necesario
+        navigate('/login');
+      }
+    };
+    
 
     return (
     <Box sx={{ display: "flex" }}>
@@ -150,9 +172,12 @@ function MenuBar({children}) {
             >
             <MenuIcon />
             </IconButton>
-            <Typography variant="h6" noWrap component="div">
+            <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>{/* alinear el boton de login a la dereacha con flexGrow  */}
             Mini variant drawer
             </Typography>
+            <IconButton aria-label="logout" color="secondary" onClick={handleLogout}> 
+              <LogoutIcon/>
+            </IconButton>
         </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>

@@ -1,7 +1,8 @@
 import axios from 'axios'
 const apiIxachi = axios.create({
     //baseURL: 'http://localhost/api-laravel/public/api'
-    baseURL:'http://127.0.0.1:8000/api'
+    baseURL:'http://127.0.0.1:8000/api',
+    
 });
 
 
@@ -12,6 +13,15 @@ export const  getUserFromDb=async (credentials)=>{
 
 export const  getUserActive=async (token)=>{
     const response= await apiIxachi.get('/user', { 
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+    }) 
+    return response
+}
+
+export const  setLogout=async (token)=>{
+    const response= await apiIxachi.get('/logout',{ 
         headers: {
           Authorization: `Bearer ${token}`,
         },
