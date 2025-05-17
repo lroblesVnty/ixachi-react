@@ -4,7 +4,7 @@ import viteLogo from '/vite.svg'
 import MenuBar from './components/MenuBar'
 import './App.css'
 import Home from './pages/Home'
-import { Routes, Route} from "react-router-dom";
+import { Routes, Route,useLocation} from "react-router-dom";
 import Dashboard from './pages/Dashboard'
 import Permisos from './pages/Permisos'
 import AltaLevantamientos from './pages/AltaLevantamientos'
@@ -18,6 +18,8 @@ import { CssBaseline, Button } from "@mui/material";
 
 
 function App() {
+	const location = useLocation();
+	const isLoginPage = location.pathname === '/login';
 
 	const theme = createTheme({
 		palette: {
@@ -37,7 +39,7 @@ function App() {
 
   	return (
 		<ThemeProvider theme={theme}>
-
+			{!isLoginPage ? (
 			<MenuBar> 
 				<Routes>
 					<Route path="/home" element={<Home/>} />
@@ -57,7 +59,6 @@ function App() {
 					<Route path="/levantamientos" element={<Levantamientos/>} />
 					<Route path="/levantamientos/:idLev" element={<DetalleLevantamiento/>} />
 					<Route path="/contabilidad" element={<ValidacionSAT/>} />
-					<Route path="/login" element={<Login/>} />
 						{/* <Route>
 							<Route path="/home" element={<Home/>} />
 						</Route>
@@ -72,6 +73,11 @@ function App() {
 						</Route> */}
 				</Routes>
 			</MenuBar>
+			): (
+				<Routes>
+					<Route path="/login" element={<Login/>} />
+				</Routes>
+			)}
 		</ThemeProvider>
    		
   );
