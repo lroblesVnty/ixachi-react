@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }) => {
                 return { success: false, error: response.data?.message || 'Credenciales inválidas' };
             }
         } catch (error) {
-            if (error.status==400) {
+            if (error.status==400 || error.status==401) {
                 return { success: false, error: error.response.data?.message || 'Credenciales inválidas' };
             }
             return { success: false, error: error.response?.data || 'Error de conexión' };
