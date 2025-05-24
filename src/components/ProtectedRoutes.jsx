@@ -1,6 +1,6 @@
 import { useContext, useEffect } from 'react';
 import { AuthContext } from '../Auth/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,Outlet } from 'react-router-dom';
 
 const ProtectedRoute = ({ children }) => {
     const { isAuthenticated, loadingSession } = useContext(AuthContext);
@@ -17,7 +17,7 @@ const ProtectedRoute = ({ children }) => {
         return <div>Cargando sesión...</div>; // O un componente de carga más sofisticado
     }
 
-    return isAuthenticated ? children : null;
+    return isAuthenticated ?  <Outlet /> : null;
 };
 
 export default ProtectedRoute;

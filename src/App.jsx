@@ -4,7 +4,7 @@ import viteLogo from '/vite.svg'
 import MenuBar from './components/MenuBar'
 import './App.css'
 import Home from './pages/Home'
-import { Routes, Route,useLocation} from "react-router-dom";
+import { Routes, Route,useLocation, createBrowserRouter, RouterProvider} from "react-router-dom";
 import Dashboard from './pages/Dashboard'
 import Permisos from './pages/Permisos'
 import AltaLevantamientos from './pages/AltaLevantamientos'
@@ -15,6 +15,8 @@ import Login from './pages/Login'
 import ProtectedRoute from './components/ProtectedRoutes'
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { CssBaseline, Button } from "@mui/material";
+import NotFoundPage from './pages/NotFoundPage'
+import MenuLayout from './components/MenuLayout'
 
 
 function App() {
@@ -36,9 +38,10 @@ function App() {
 			},
 		},
 	});	
-
+	
   	return (
 		<ThemeProvider theme={theme}>
+			
 			{!isLoginPage ? (
 			<MenuBar> 
 				<Routes>
@@ -59,6 +62,7 @@ function App() {
 					<Route path="/levantamientos" element={<Levantamientos/>} />
 					<Route path="/levantamientos/:idLev" element={<DetalleLevantamiento/>} />
 					<Route path="/contabilidad" element={<ValidacionSAT/>} />
+					
 						{/* <Route>
 							<Route path="/home" element={<Home/>} />
 						</Route>
