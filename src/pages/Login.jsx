@@ -36,7 +36,7 @@ const Login = () => {
    
     const watchedFields = watch(["password", "email"]);
     useEffect(() => {
-        console.log(watchedFields)
+       // console.log(watchedFields)
         if (isDirty && watchedFields.some((field) => field !== "")) {
             setHasError(false);
             setBackendFailed(false);

@@ -10,6 +10,8 @@ import MenuLayout from './components/MenuLayout'
 import ProtectedRoute from "./components/ProtectedRoutes";
 import NotFoundPage from "./pages/NotFoundPage";
 import AltaLevantamientos from "./pages/AltaLevantamientos";
+import UnauthorizedPage from "./pages/UnauthorizedPage";
+import Home from "./pages/Home";
 
 
 const router=createBrowserRouter([
@@ -17,12 +19,14 @@ const router=createBrowserRouter([
             path: "/",
             Component: MenuLayout, // Envuelve las rutas con MenuBar
             children: [
-            //{ index: true, Component: Home },
+                { index: true, Component: Home },
            // { path: "dashboard", Component: Dashboard },
                 {
                     path: "levantamientos",
-                    Component: ProtectedRoute,
-                    children: [{ index: true, Component: Levantamientos }]
+                    element:(<ProtectedRoute allowedRoles={['levantador','admin']}>
+                        <Levantamientos/>
+                    </ProtectedRoute>),
+
                 },
                 { path: "dashboard", Component: Dashboard },
                 {
@@ -40,6 +44,12 @@ const router=createBrowserRouter([
             path: "*",
             Component: NotFoundPage, // Login está fuera del MenuBar
         },
+        {
+            path: "/unauthorized",
+            Component: UnauthorizedPage, // Página de acceso denegado
+        },
+
+//<Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><AdminPage /></ProtectedRoute>} />
 
         /*{
             path: "/",

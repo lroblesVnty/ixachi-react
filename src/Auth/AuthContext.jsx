@@ -8,11 +8,13 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem('authToken')); // Cargar token inicial
     const [loadingSession, setLoadingSession] = useState(true);
+    const [userRoles, setUserRoles] = useState([]);
+
 
     const getSession = useCallback(async () => {
         setLoadingSession(true);
         const storedToken = localStorage.getItem('authToken');
-		console.log('dentrooo')
+		//console.log('dentrooo')
 		//TODO checar si se puede consultar sin mandar el token, solo con la cookie que manda el back
 		//TODO colocar un boton para el logout en la barra del menu
         if (storedToken) {

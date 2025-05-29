@@ -29,36 +29,36 @@ export const SessionProvider = ({ children }) => {
 
     const signIn = async (providerId, credentials) => {
         console.log("Provider ID:", providerId);
-  console.log("Credentials:", credentials);
+         console.log("Credentials:", credentials);
 
-  try {
-    const result = await Auth({
-      providers: [
-        Credentials({
-          name: 'credentials',
-          async authorize(creds) {
-            console.log("Authorize function being called DIRECTLY!");
-            if (creds.email === 'test@example.com' && creds.password === 'password') {
-              return { id: '1', email: 'test@example.com', token: 'test_token' };
-            }
-            return null;
-          },
-        }),
-      ],
-    }, {
-      action: 'signin',
-      providerId: providerId,
-      redirect: false,
-      callbackUrl: window.location.origin,
-      method: 'POST',
-      ...credentials,
-    });
-    console.log("Auth Result:", result);
-    // ...
-  } catch (error) {
-    console.error("Error en signIn:", error);
-    // ...
-  }
+    try {
+        const result = await Auth({
+        providers: [
+            Credentials({
+            name: 'credentials',
+            async authorize(creds) {
+                console.log("Authorize function being called DIRECTLY!");
+                if (creds.email === 'test@example.com' && creds.password === 'password') {
+                return { id: '1', email: 'test@example.com', token: 'test_token' };
+                }
+                return null;
+            },
+            }),
+        ],
+        }, {
+        action: 'signin',
+        providerId: providerId,
+        redirect: false,
+        callbackUrl: window.location.origin,
+        method: 'POST',
+        ...credentials,
+        });
+        console.log("Auth Result:", result);
+        // ...
+    } catch (error) {
+        console.error("Error en signIn:", error);
+        // ...
+    }
       };
     
     const signOut = async () => {
