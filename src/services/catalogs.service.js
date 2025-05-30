@@ -1,8 +1,4 @@
-import axios from 'axios'
-const apiIxachi = axios.create({
-    //baseURL: 'http://localhost/api-laravel/public/api'
-    baseURL:'http://127.0.0.1:8000/api'
-});
+import apiIxachi from "./axiosInstance"
 
 
 export const  getCultivos=async ()=>{

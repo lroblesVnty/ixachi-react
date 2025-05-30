@@ -5,13 +5,13 @@ import { useNavigate,Outlet,Navigate } from 'react-router-dom';
 const ProtectedRoute = ({ allowedRoles,children }) => {
 //const ProtectedRoute = ({ children,allowedRoles }) => {
     const { isAuthenticated, loadingSession,user } = useContext(AuthContext);
-    //console.log({user})
+    console.log({user})
     const userRoles = user?.role_names || [];
     //const {role_names:userRoles}=user;
     const navigate = useNavigate();
     //console.log({isAuthenticated})
     //console.log({allowedRoles})
-   // console.log({userRoles})
+   console.log({userRoles})
 
     useEffect(() => {
         if (!isAuthenticated && !loadingSession) {

@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect,useCallback } from 'react';
 import { getUserActive, getUserFromDb, setLogout } from '../services/Auth.service';
+import { isTokenExpired } from '../utils/tokenUtils';
 
 export const AuthContext = createContext(null);
 
@@ -8,8 +9,40 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem('authToken')); // Cargar token inicial
     const [loadingSession, setLoadingSession] = useState(true);
-    const [userRoles, setUserRoles] = useState([]);
+    const [expiresAt, setExpiresAt] = useState(null);
 
+
+     const checkSession = useCallback(() => {
+        setLoadingSession(true); // Iniciar estado de carga
+
+        const storedToken = localStorage.getItem('authToken');
+        const storedExpiresAt = localStorage.getItem('token_expires_at');
+
+        if (storedToken && storedExpiresAt) {
+            if (isTokenExpired(storedExpiresAt)) {
+                console.log("Token expirado al iniciar la aplicación. Cerrando sesión.");
+                setToken(null);
+                localStorage.removeItem('authToken');
+                console.log('se borro 10');
+                setIsAuthenticated(false);
+                setUser(null);
+                setLoadingSession(false);
+                return { isAuthenticated: false, user: null, token: null };
+            } 
+            console.log('checkSession')
+        } else {
+            // No hay token almacenado, asegurar que no esté autenticado
+            setIsAuthenticated(false);
+            setToken(null);
+            console.log('entraaaa')
+            setExpiresAt(null);
+        }
+        setLoadingSession(false); // La sesión ha terminado de cargar
+    }, []); // Dependencia en 'logout' para asegurar que siempre use la función más reciente
+
+    useEffect(() => {
+        checkSession();
+    }, [checkSession]);
 
     const getSession = useCallback(async () => {
         setLoadingSession(true);
@@ -57,23 +90,10 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
-    useEffect(() => {
+    /*useEffect(() => {
         getSession(); // Llamar a getSession al montar el componente AuthProvider
-      }, [getSession]);
+    }, [getSession]);*/
 
-   /*  useEffect(() => {
-        if (token) {
-        // Aquí podrías verificar la validez del token con tu backend
-        setIsAuthenticated(true);
-        // Si la API devuelve información del usuario con el token, guárdala aquí
-        // fetch('/api/user', { headers: { Authorization: `Bearer ${token}` } })
-        //   .then(res => res.json())
-        //   .then(userData => setUser(userData));
-        } else {
-        setIsAuthenticated(false);
-        setUser(null);
-        }
-    }, [token]); */
 
     const login = useCallback(async (credentials) => {
         try {
@@ -82,8 +102,11 @@ export const AuthProvider = ({ children }) => {
             if (response.status === 200 && response?.data) {
                 setToken(response.data.access_token);
                 localStorage.setItem('authToken', response.data.access_token);
+                localStorage.setItem('token_expires_at', response.data.expires_at);
                 setIsAuthenticated(true);
+                setExpiresAt(response.data.expires_at);
                 setUser(response.data || null); // Asume que la API puede devolver info del usuario
+                console.log(response.data)
                 return { success: true }; // Indica que el inicio de sesión fue exitoso
             } else {
                 return { success: false, error: response.data?.message || 'Credenciales inválidas' };
@@ -104,9 +127,11 @@ export const AuthProvider = ({ children }) => {
             if (response.status === 200 && response?.data) {
                 setToken(null);
                 localStorage.removeItem('authToken');
+                localStorage.removeItem('token_expires_at');
                 console.log('se borro logout');
                 setIsAuthenticated(false);
                 setUser(null);
+                setExpiresAt(null); 
             } else {
                 return { success: false, error: response.data?.message || 'Credenciales inválidas' };
             }
@@ -115,6 +140,8 @@ export const AuthProvider = ({ children }) => {
         }
        
     }, []);
+
+   
 
   const value = {
     isAuthenticated,

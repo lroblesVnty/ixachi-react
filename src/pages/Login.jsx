@@ -13,12 +13,10 @@ import Button from '@mui/material/Button';
 import SaveIcon from '@mui/icons-material/Save';
 import { FormHelperText } from "@mui/material";
 import Alert from '@mui/material/Alert';
-import { useSession } from "../Providers/SessionProvider";
 import { AuthContext } from "../Auth/AuthContext";
 import { useNavigate } from 'react-router-dom';
 import styles from '../styles/login.module.css'
 //import LoadingButton from '@mui/lab/LoadingButton';
-//import { signIn } from "../Auth/Auth"
 
 const Login = () => {
     const {register, handleSubmit,formState: { errors,isDirty},watch,reset,control} = useForm({ defaultValues: { email: "",password:"" } });
