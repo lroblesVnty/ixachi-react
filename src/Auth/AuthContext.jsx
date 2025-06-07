@@ -10,6 +10,8 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(localStorage.getItem('authToken')); // Cargar token inicial
     const [loadingSession, setLoadingSession] = useState(true);
     const [expiresAt, setExpiresAt] = useState(null);
+     const storedUser = JSON.parse(sessionStorage.getItem("user"));//checar esto porque guardar ddatos de user puede ser inseguro
+
 
 
      const checkSession = useCallback(() => {
@@ -23,11 +25,15 @@ export const AuthProvider = ({ children }) => {
                 console.log("Token expirado al iniciar la aplicación. Cerrando sesión.");
                 setToken(null);
                 localStorage.removeItem('authToken');
+                sessionStorage.removeItem('user');
                 console.log('se borro 10');
                 setIsAuthenticated(false);
                 setUser(null);
                 setLoadingSession(false);
                 return { isAuthenticated: false, user: null, token: null };
+            }else{
+                setIsAuthenticated(true);
+                setUser(storedUser);
             } 
             console.log('checkSession')
         } else {
@@ -36,6 +42,7 @@ export const AuthProvider = ({ children }) => {
             setToken(null);
             console.log('entraaaa')
             setExpiresAt(null);
+            sessionStorage.removeItem('user');
         }
         setLoadingSession(false); // La sesión ha terminado de cargar
     }, []); // Dependencia en 'logout' para asegurar que siempre use la función más reciente
@@ -58,7 +65,7 @@ export const AuthProvider = ({ children }) => {
 					//setToken(response?.data.access_token);
 					//localStorage.setItem('authToken', response.data.access_token);
 					setIsAuthenticated(true);
-					setUser(response.data);
+					setUser(response.data.data);
 					setLoadingSession(false);
 					return { isAuthenticated: true, user: response.data, token: storedToken };
 				} else {
@@ -103,9 +110,10 @@ export const AuthProvider = ({ children }) => {
                 setToken(response.data.access_token);
                 localStorage.setItem('authToken', response.data.access_token);
                 localStorage.setItem('token_expires_at', response.data.expires_at);
+                sessionStorage.setItem('user', JSON.stringify(response.data.data));
                 setIsAuthenticated(true);
                 setExpiresAt(response.data.expires_at);
-                setUser(response.data || null); // Asume que la API puede devolver info del usuario
+                setUser(response.data.data || null); // Asume que la API puede devolver info del usuario
                 console.log(response.data)
                 return { success: true }; // Indica que el inicio de sesión fue exitoso
             } else {
@@ -128,6 +136,7 @@ export const AuthProvider = ({ children }) => {
                 setToken(null);
                 localStorage.removeItem('authToken');
                 localStorage.removeItem('token_expires_at');
+                sessionStorage.removeItem('user');
                 console.log('se borro logout');
                 setIsAuthenticated(false);
                 setUser(null);

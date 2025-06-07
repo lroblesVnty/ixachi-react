@@ -17,13 +17,17 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
-import { useState,useContext } from "react";
+import { useState,useContext,useEffect } from "react";
 import HomeIcon from '@mui/icons-material/Home';
 import { NavLink, useLocation } from "react-router-dom";
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import { Dangerous } from "@mui/icons-material";
+import Tooltip from '@mui/material/Tooltip';
+import Avatar from '@mui/material/Avatar';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { AuthContext } from "../Auth/AuthContext";
 import { useNavigate } from 'react-router-dom';
@@ -123,10 +127,17 @@ const Drawer = styled(MuiDrawer, {
 
 function MenuBar({children}) {
     const theme = useTheme();
+    const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
     const [open, setOpen] = useState(false);
+    const [userInitials, setUserInitials] = useState(false);
     const location=useLocation();
-    const {logout} = useContext(AuthContext);
+    const {logout,user} = useContext(AuthContext);
     const navigate = useNavigate();
+    const [anchorElUser, setAnchorElUser] = useState(null);
+    useEffect(() => {
+        getUserInitials();
+    }, []);
+    
 
     const handleDrawerOpen = () => {
       setOpen(true);
@@ -154,6 +165,36 @@ function MenuBar({children}) {
       }
     };
     
+    const handleOpenUserMenu = (event) => {
+        setAnchorElUser(event.currentTarget);
+        console.log(event.currentTarget)
+    };
+
+    const handleCloseUserMenu = () => {
+        setAnchorElUser(null);
+    };
+    const handleMenuItemClick = (setting) => {
+        console.log(`Clic en: ${setting}`);
+        handleCloseUserMenu(); // Si quieres que el menú se cierre después del clic
+        if (setting=='Logout') {
+            handleLogout()
+        }
+       
+    };
+
+    const getUserInitials = () => {
+        console.log(user) 
+        const username = user?.name || ''; 
+        if (username!=''){
+            const initialsName=username.split(' ')
+            .map(word => word.charAt(0).toUpperCase())
+            .join('');
+            setUserInitials(initialsName);
+        }
+            
+    };
+
+
 
     return (
     <Box sx={{ display: "flex" }}>
@@ -175,9 +216,36 @@ function MenuBar({children}) {
             <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>{/* alinear el boton de login a la dereacha con flexGrow  */}
             Mini variant drawer
             </Typography>
-            <IconButton aria-label="logout" color="secondary" onClick={handleLogout}> 
+           {/*  <IconButton aria-label="logout" color="secondary" onClick={handleLogout}> 
               <LogoutIcon/>
-            </IconButton>
+            </IconButton> */}
+            <Tooltip title="Open settings">
+              <IconButton sx={{ p: 0 }} onClick={handleOpenUserMenu} >
+                <Avatar >{userInitials}</Avatar>
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: '45px' }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              {settings.map((setting) => (
+                <MenuItem key={setting}  onClick={() => handleMenuItemClick(setting)}>
+                  <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
         </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>

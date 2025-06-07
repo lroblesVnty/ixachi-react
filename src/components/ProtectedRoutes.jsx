@@ -32,7 +32,7 @@ const ProtectedRoute = ({ allowedRoles,children }) => {
     }
 
     const hasRequiredRole = allowedRoles.some(role => userRoles.includes(role));
-    if (!hasRequiredRole) {
+    if (!hasRequiredRole && isAuthenticated) {
         // Si el usuario no tiene los roles permitidos, redirigir a una página de acceso denegado
         return <Navigate to="/unauthorized" replace />;
     }
